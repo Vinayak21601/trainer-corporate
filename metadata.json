@@ -1,0 +1,6 @@
+{
+  "name": "TrainEnterprise - Corporate Training & Expert Marketplace",
+  "description": "Enterprise marketplace matching corporate partners with vetted corporate trainers, leadership coaches, and domain experts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
