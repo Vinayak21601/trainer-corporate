@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { LandingPage } from '@/src/components/LandingPage';
+import { LandingPageV2 } from '@/src/components/LandingPageV2';
 import { useApp } from '@/src/context/AppContext';
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
   };
 
   return (
-    <LandingPage
+    <LandingPageV2
       onExploreExperts={handleExploreExperts}
       onCreateRequirement={() => router.push('/create-requirement')}
       featuredTrainers={trainers}
