@@ -10,8 +10,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const pathname = usePathname();
   const { shortlistedTrainers, openAiAssistant } = useApp();
 
-  // Marketing and authentication pages own their full-screen layouts.
-  const isFullScreen = pathname === '/' || pathname === '/login' || pathname === '/register';
+  // Marketing, auth, and onboarding wizard pages own their full-screen layouts.
+  const isFullScreen = 
+    pathname === '/' || 
+    pathname === '/login' || 
+    pathname === '/register' || 
+    pathname === '/create-requirement' || 
+    pathname === '/onboarding';
 
   if (isFullScreen) {
     return <div className="min-h-screen bg-white font-sans text-[#111111]">{children}</div>;

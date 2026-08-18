@@ -11,8 +11,8 @@ type LoginErrors = Partial<Record<'email' | 'password', string>>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('alex.corporate@company.com');
+  const [password, setPassword] = useState('password123');
   const [remember, setRemember] = useState(false);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,7 +26,11 @@ export default function LoginPage() {
     if (Object.keys(nextErrors).length) return;
 
     setIsSubmitting(true);
-    window.setTimeout(() => router.push('/dashboard'), 650);
+    if (typeof window !== 'undefined') {
+      const nameFromEmail = email.split('@')[0].split('.').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ') || 'Corporate Client';
+      localStorage.setItem('onboarding_user', JSON.stringify({ name: nameFromEmail, email, organization: 'Acme Enterprises' }));
+    }
+    window.setTimeout(() => router.push('/create-requirement'), 650);
   };
 
   return (

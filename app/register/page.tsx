@@ -37,7 +37,10 @@ export default function RegisterPage() {
     if (Object.keys(nextErrors).length) return;
 
     setIsSubmitting(true);
-    window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-portal' : '/dashboard'), 650);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('onboarding_user', JSON.stringify({ name, email, organization }));
+    }
+    window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-portal' : '/create-requirement'), 650);
   };
 
   return (
