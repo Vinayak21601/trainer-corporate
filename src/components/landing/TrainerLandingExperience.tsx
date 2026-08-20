@@ -173,7 +173,7 @@ function TrainerCalendarWorkspace({ onJoin }: { onJoin: () => void }) {
 export function TrainerLandingExperience({ featuredTrainers, onSelectTrainer }: TrainerLandingExperienceProps) {
   const router = useRouter();
   const previewTrainer = featuredTrainers[0];
-  const joinAsTrainer = () => router.push('/register?role=trainer');
+  const joinAsTrainer = () => router.push('/trainer-registration');
 
   return (
     <main>

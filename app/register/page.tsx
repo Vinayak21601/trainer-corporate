@@ -40,7 +40,7 @@ export default function RegisterPage() {
     if (typeof window !== 'undefined') {
       localStorage.setItem('onboarding_user', JSON.stringify({ name, email, organization }));
     }
-    window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-portal' : '/create-requirement'), 650);
+    window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-registration' : '/create-requirement'), 650);
   };
 
   return (

@@ -46,7 +46,7 @@ export function LandingHeader({ persona, onExploreExperts, onCreateRequirement }
         { href: '#built-for-everyone', label: 'For teams' },
         { href: '#testimonials', label: 'Reviews' },
       ];
-  const handlePrimaryAction = () => trainerExperience ? router.push('/register?role=trainer') : onExploreExperts();
+  const handlePrimaryAction = () => trainerExperience ? router.push('/trainer-registration') : onExploreExperts();
 
   return (
     <>
