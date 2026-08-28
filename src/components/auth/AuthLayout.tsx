@@ -19,10 +19,10 @@ const metrics = [
 
 export function AuthLayout({ children, mode }: AuthLayoutProps) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-white text-[#091536] lg:h-screen lg:min-h-0">
+    <div className="relative min-h-screen overflow-y-auto bg-white text-[#091536]">
       <HeroBackdrop />
 
-      <main className="relative mx-auto grid min-h-screen max-w-[1420px] lg:my-4 lg:h-[calc(100vh-2rem)] lg:min-h-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(480px,0.95fr)] lg:overflow-hidden lg:rounded-[32px] lg:border lg:border-white/80 lg:bg-white/35 lg:shadow-[0_30px_90px_rgba(42,92,132,0.13)] lg:backdrop-blur-sm">
+      <main className="relative mx-auto grid min-h-screen max-w-[1420px] lg:my-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(480px,0.95fr)]">
         <section className="relative hidden overflow-hidden px-12 py-8 lg:flex lg:flex-col xl:px-16 xl:py-9">
           <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-[linear-gradient(transparent,#CFE2F4_20%,#CFE2F4_80%,transparent)]" />
           <Link href="/" className="atlas-focus relative z-10 flex w-fit items-center gap-3 rounded-xl">
@@ -58,7 +58,7 @@ export function AuthLayout({ children, mode }: AuthLayoutProps) {
           </div>
         </section>
 
-        <section className="relative flex min-h-screen items-center justify-center bg-white/18 px-4 py-6 sm:px-8 lg:h-auto lg:min-h-0 lg:px-10 lg:py-4">
+        <section className="relative flex min-h-screen items-center justify-center bg-white/18 px-4 py-8 sm:px-8 lg:px-10 lg:py-6">
           <Link href="/" className="atlas-focus absolute left-5 top-5 flex items-center gap-2 rounded-lg lg:hidden">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[linear-gradient(135deg,#1FC8DB,#31F29B)] font-black text-white">A</span>
             <span className="atlas-display text-xl font-black">Atlas</span>
@@ -67,7 +67,7 @@ export function AuthLayout({ children, mode }: AuthLayoutProps) {
             initial={{ opacity: 0, y: 18, scale: 0.99 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.45, ease: 'easeOut' }}
-            className="w-full max-w-[500px]"
+            className="w-full max-w-[540px] my-auto py-4"
           >
             {children}
           </motion.div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { LandingPage } from '@/src/components/LandingPage';
+// import { LandingPage } from '@/src/components/LandingPage';
 import { LandingPageV2 } from '@/src/components/LandingPageV2';
 import { useApp } from '@/src/context/AppContext';
 

@@ -19,7 +19,8 @@ import {
   Zap,
   LogIn,
   UserPlus,
-  FileText
+  FileText,
+  GraduationCap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trainer } from '../types';
@@ -69,6 +70,14 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
 
   const handleCorporateSignIn = () => {
     router.push('/login?role=corporate');
+  };
+
+  const handleInstitutionSignUp = () => {
+    router.push('/register?role=institution');
+  };
+
+  const handleInstitutionSignIn = () => {
+    router.push('/login?role=institution');
   };
 
   const navItems = [
@@ -376,167 +385,237 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
         </div>
       </section>
 
-      {/* JOIN ATLAS TODAY DUAL ROLE SECTION (Ultra-Premium Redesign) */}
-      <section id="choose-path" className="relative py-20 sm:py-24 lg:py-28 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
+      {/* JOIN ATLAS TODAY THREE ROLE SECTION */}
+      <section id="choose-path" className="relative py-16 sm:py-24 lg:py-28 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
         {/* Subtle decorative background glow spheres */}
         <div className="pointer-events-none absolute left-1/4 top-10 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl" />
         <div className="pointer-events-none absolute right-1/4 bottom-10 h-96 w-96 rounded-full bg-teal-400/10 blur-3xl" />
+        <div className="pointer-events-none absolute left-1/2 bottom-10 h-96 w-96 rounded-full bg-purple-400/10 blur-3xl" />
 
-        <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="JOIN ATLAS TODAY"
             title="Choose your path to get started"
-            description="Select whether you are a corporate L&D leader looking for facilitators or an expert trainer ready to grow your enterprise practice."
+            description="Select whether you are an expert trainer, corporate L&D leader, or educational institution seeking facilitators."
           />
 
-          <div className="relative mt-14 flex flex-col items-center gap-8 lg:flex-row lg:items-stretch lg:justify-center">
+          <div className="relative mt-8 sm:mt-14 grid grid-cols-3 gap-1.5 min-[380px]:gap-2 sm:gap-4 lg:gap-6 items-stretch">
             {/* Trainer Card */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              whileHover={{ y: -8 }}
-              className="group relative flex w-full flex-1 flex-col justify-between overflow-hidden rounded-[28px] border border-[#DCE8F4] bg-white/95 p-8 shadow-[0_20px_50px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#1677FF]/60 hover:shadow-[0_30px_70px_rgba(22,119,255,0.18)] sm:p-10"
+              whileHover={{ y: -6 }}
+              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#1677FF]/60 hover:shadow-[0_25px_60px_rgba(22,119,255,0.18)]"
             >
               {/* Card top glow bar */}
               <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1677FF] via-[#2584FF] to-[#60A5FA] opacity-90" />
 
               <div>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
                   {/* Icon Container */}
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1677FF] to-[#2584FF] text-white shadow-lg shadow-[#1677FF]/25 transition-transform duration-300 group-hover:scale-105">
-                    <User className="h-8 w-8 stroke-[2]" />
+                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#1677FF] to-[#2584FF] text-white shadow-md sm:shadow-lg shadow-[#1677FF]/25 transition-transform duration-300 group-hover:scale-105">
+                    <User className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
                   </div>
-                  <span className="rounded-full border border-[#D0E2FF] bg-[#EEF5FF] px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#1677FF]">
+                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#D0E2FF] bg-[#EEF5FF] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#1677FF]">
                     For Facilitators
                   </span>
                 </div>
 
-                <h3 className="atlas-display mt-6 text-2xl font-black text-[#081536] sm:text-3xl">
+                <h3 className="atlas-display mt-2 sm:mt-6 text-[11px] min-[380px]:text-xs sm:text-2xl lg:text-3xl font-black text-[#081536] leading-tight">
                   Trainer
                 </h3>
 
-                <p className="mt-2 text-sm font-semibold text-[#5A6680]">
-                  Share your knowledge. Empower organizations.
+                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
+                  Share knowledge. Empower teams.
                 </p>
 
                 {/* Feature Bullet Points */}
-                <div className="my-7 space-y-3 border-t border-b border-[#F0F5FA] py-5">
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>Create a verified expert profile showcasing client outcomes</span>
+                    <span className="leading-tight sm:leading-normal">Verified expert profile showcasing outcomes</span>
                   </div>
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>Get matched to corporate training briefs aligned with your skills</span>
+                    <span className="leading-tight sm:leading-normal">Matched to training briefs aligned with skills</span>
                   </div>
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>Full control over your availability, delivery mode &amp; rates</span>
+                    <span className="leading-tight sm:leading-normal">Full control over availability, mode &amp; rates</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
                 <button
                   type="button"
                   onClick={handleTrainerSignUp}
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#1677FF] px-6 py-3 text-sm font-bold text-white shadow-md shadow-[#1677FF]/25 transition-all hover:bg-[#1562D6] active:scale-98"
+                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#1677FF] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#1677FF]/25 transition-all hover:bg-[#1562D6] active:scale-98"
                 >
                   <span>Sign Up</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
                 </button>
                 <button
                   type="button"
                   onClick={handleTrainerSignIn}
-                  className="w-full sm:w-32 inline-flex items-center justify-center rounded-xl border border-[#1677FF] bg-white px-6 py-3 text-sm font-bold text-[#1677FF] transition-all hover:bg-[#EEF5FF] active:scale-98"
+                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#1677FF] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#1677FF] transition-all hover:bg-[#EEF5FF] active:scale-98"
                 >
-                 Log In
+                  Log In
                 </button>
               </div>
             </motion.div>
-
-            {/* Middle OR Divider Badge */}
-            <div className="relative z-10 -my-4 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-[#DCE8F4] bg-white font-black text-xs text-[#081536] shadow-[0_10px_25px_rgba(34,67,93,0.12)] lg:my-auto lg:-mx-7">
-              <span className="bg-gradient-to-r from-[#1677FF] to-[#11BFA5] bg-clip-text text-transparent font-black">OR</span>
-            </div>
 
             {/* Corporate Card */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              whileHover={{ y: -8 }}
-              className="group relative flex w-full flex-1 flex-col justify-between overflow-hidden rounded-[28px] border border-[#DCE8F4] bg-white/95 p-8 shadow-[0_20px_50px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#11BFA5]/60 hover:shadow-[0_30px_70px_rgba(17,191,165,0.18)] sm:p-10"
+              transition={{ duration: 0.5, delay: 0.08 }}
+              whileHover={{ y: -6 }}
+              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#11BFA5]/60 hover:shadow-[0_25px_60px_rgba(17,191,165,0.18)]"
             >
               {/* Card top glow bar */}
               <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#11BFA5] via-[#10B981] to-[#34D399] opacity-90" />
 
               <div>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
                   {/* Icon Container */}
-                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[#11BFA5] to-[#10B981] text-white shadow-lg shadow-[#11BFA5]/25 transition-transform duration-300 group-hover:scale-105">
-                    <Building2 className="h-8 w-8 stroke-[2]" />
+                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#11BFA5] to-[#10B981] text-white shadow-md sm:shadow-lg shadow-[#11BFA5]/25 transition-transform duration-300 group-hover:scale-105">
+                    <Building2 className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
                   </div>
-                  <span className="rounded-full border border-[#BDEBDD] bg-[#E8FAF5] px-3.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#0E8D76]">
+                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#BDEBDD] bg-[#E8FAF5] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#0E8D76]">
                     For L&amp;D Teams
                   </span>
                 </div>
 
-                <h3 className="atlas-display mt-6 text-2xl font-black text-[#081536] sm:text-3xl">
+                <h3 className="atlas-display mt-2 sm:mt-6 text-[11px] min-[380px]:text-xs sm:text-2xl lg:text-3xl font-black text-[#081536] leading-tight">
                   Corporate
                 </h3>
 
-                <p className="mt-2 text-sm font-semibold text-[#5A6680]">
-                  Find the right trainers. Drive real results.
+                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
+                  Find top trainers. Drive results.
                 </p>
 
                 {/* Feature Bullet Points */}
-                <div className="my-7 space-y-3 border-t border-b border-[#F0F5FA] py-5">
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>Access top 1% verified corporate facilitators &amp; experts</span>
+                    <span className="leading-tight sm:leading-normal">Access top 1% verified corporate facilitators</span>
                   </div>
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>Post custom training briefs and receive tailored proposals</span>
+                    <span className="leading-tight sm:leading-normal">Post custom briefs &amp; receive proposals</span>
                   </div>
-                  <div className="flex items-start gap-3 text-xs font-semibold text-[#334155]">
-                    <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-3 w-3" />
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                     </div>
-                    <span>AI-powered matchmaking with transparent peer reviews</span>
+                    <span className="leading-tight sm:leading-normal">AI matchmaking with peer reviews</span>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
                 <button
                   type="button"
                   onClick={handleCorporateSignUp}
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-6 py-3 text-sm font-bold text-white shadow-md shadow-[#0E9F88]/25 transition-all hover:bg-[#0C8B77] active:scale-98"
+                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#0E9F88] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#0E9F88]/25 transition-all hover:bg-[#0C8B77] active:scale-98"
                 >
                   <span>Sign Up</span>
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
                 </button>
                 <button
                   type="button"
                   onClick={handleCorporateSignIn}
-                  className="w-full sm:w-32 inline-flex items-center justify-center rounded-xl border border-[#0E9F88] bg-white px-6 py-3 text-sm font-bold text-[#0E9F88] transition-all hover:bg-[#E8FAF5] active:scale-98"
+                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#0E9F88] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#0E9F88] transition-all hover:bg-[#E8FAF5] active:scale-98"
+                >
+                  Log In
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Organisations / Institutions Card */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.16 }}
+              whileHover={{ y: -6 }}
+              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#7C3AED]/60 hover:shadow-[0_25px_60px_rgba(124,58,237,0.18)]"
+            >
+              {/* Card top glow bar */}
+              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] opacity-90" />
+
+              <div>
+                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
+                  {/* Icon Container */}
+                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#6366F1] text-white shadow-md sm:shadow-lg shadow-[#7C3AED]/25 transition-transform duration-300 group-hover:scale-105">
+                    <GraduationCap className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
+                  </div>
+                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#DDD6FE] bg-[#F3E8FF] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#6D28D9]">
+                    For Institutions
+                  </span>
+                </div>
+
+                <h3 className="atlas-display mt-2 sm:mt-6 text-[6.5px] min-[350px]:text-[7.5px] min-[400px]:text-[9px] min-[480px]:text-xs sm:text-base lg:text-xl xl:text-2xl font-black text-[#081536] leading-none whitespace-nowrap tracking-tight">
+                  Organisations / Institutions
+                </h3>
+
+                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
+                  Empower campus &amp; cohort training.
+                </p>
+
+                {/* Feature Bullet Points */}
+                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                    </div>
+                    <span className="leading-tight sm:leading-normal">Bulk faculty &amp; student cohort training</span>
+                  </div>
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                    </div>
+                    <span className="leading-tight sm:leading-normal">Connect with accredited industry experts</span>
+                  </div>
+                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
+                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
+                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                    </div>
+                    <span className="leading-tight sm:leading-normal">Institutional dashboard &amp; certifications</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
+                <button
+                  type="button"
+                  onClick={handleInstitutionSignUp}
+                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#7C3AED] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#7C3AED]/25 transition-all hover:bg-[#6D28D9] active:scale-98"
+                >
+                  <span>Sign Up</span>
+                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={handleInstitutionSignIn}
+                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#7C3AED] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#7C3AED] transition-all hover:bg-[#F3E8FF] active:scale-98"
                 >
                   Log In
                 </button>

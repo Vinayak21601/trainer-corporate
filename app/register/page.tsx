@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Building2, Check, LockKeyhole, Mail, UserRound, UsersRound } from 'lucide-react';
+import { ArrowRight, Building2, Check, LockKeyhole, Mail, UserRound, UsersRound, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { AuthLayout } from '@/src/components/auth/AuthLayout';
 import { AuthField } from '@/src/components/auth/AuthField';
 
@@ -20,10 +20,33 @@ export default function RegisterPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<RegisterErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Email verification modal states
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationError, setVerificationError] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get('role') === 'trainer') setAccountType('trainer');
   }, []);
+
+  const handleFillDemoData = () => {
+    if (accountType === 'trainer') {
+      setName('Vikram Malhotra');
+      setEmail('vikram.malhotra@experttrainers.com');
+      setPassword('password123');
+      setAcceptedTerms(true);
+      setErrors({});
+    } else {
+      setName('Sarah Jenkins');
+      setEmail('sarah.j@acmecorp.com');
+      setOrganization('Acme Corporation');
+      setPassword('password123');
+      setAcceptedTerms(true);
+      setErrors({});
+    }
+  };
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -36,11 +59,37 @@ export default function RegisterPage() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length) return;
 
-    setIsSubmitting(true);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('onboarding_user', JSON.stringify({ name, email, organization }));
-    }
-    window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-registration' : '/create-requirement'), 650);
+    // Trigger Email Verification Modal
+    setShowVerificationModal(true);
+  };
+
+  const handleConfirmVerification = (codeToVerify = verificationCode) => {
+    setIsVerifying(true);
+    setVerificationError('');
+    
+    // Simulate verification check (default code 1234 or auto-verify)
+    setTimeout(() => {
+      if (codeToVerify.trim() === '' || codeToVerify.trim() === '1234' || codeToVerify === 'AUTO_VERIFY') {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('onboarding_user', JSON.stringify({ 
+            name, 
+            email, 
+            organization,
+            accountType,
+            emailVerified: true,
+            verifiedAt: new Date().toISOString()
+          }));
+          localStorage.setItem('registered_email', email);
+          localStorage.setItem('user_name', name);
+        }
+        setShowVerificationModal(false);
+        setIsSubmitting(true);
+        window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-registration' : '/corporate-onboarding'), 400);
+      } else {
+        setIsVerifying(false);
+        setVerificationError('Invalid verification code. Please enter 1234 or click Auto-Verify.');
+      }
+    }, 500);
   };
 
   return (
@@ -50,7 +99,14 @@ export default function RegisterPage() {
         <div className="mb-4">
           <div className="flex items-center justify-between gap-3">
             <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#176BFF]">Create your profile</div>
-            <span className="hidden items-center gap-1 rounded-full border border-[#C9F1E3] bg-[#E9F9F3] px-3 py-1 text-[10px] font-black text-[#14966F] sm:inline-flex"><Check className="h-3 w-3" />Free to join</span>
+            <button
+              type="button"
+              onClick={handleFillDemoData}
+              className="inline-flex items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-3 py-1 text-[10px] font-black text-[#1677FF] transition hover:bg-[#DDF0FF]"
+            >
+              <Sparkles className="h-3 w-3 text-[#1677FF]" />
+              Auto-Fill Demo Data
+            </button>
           </div>
           <h1 className="atlas-display mt-1.5 text-2xl font-black tracking-tight text-[#091536]">Create your Atlas account</h1>
           <p className="mt-1 text-xs font-medium text-[#657189]">Choose how you’ll use the marketplace.</p>
@@ -97,6 +153,67 @@ export default function RegisterPage() {
 
         <p className="mt-4 text-center text-xs font-semibold text-[#68748A]">Already have an account? <Link href="/login" className="atlas-focus rounded font-black text-[#176BFF] hover:text-[#0D5DE8]">Sign in</Link></p>
       </div>
+
+      {/* EMAIL VERIFICATION MODAL */}
+      {showVerificationModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#07132F]/60 p-4 backdrop-blur-md">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[24px] border border-white bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF5FF] text-[#1677FF] mb-4">
+              <Mail className="h-6 w-6 stroke-[2]" />
+            </div>
+
+            <h3 className="atlas-display text-xl font-black text-[#091536]">Verify Your Email Address</h3>
+            <p className="mt-1 text-xs font-medium text-[#5A6680]">
+              We have sent a verification code to <span className="font-bold text-[#091536]">{email}</span>. Please verify to complete your sign up.
+            </p>
+
+            <div className="my-4 rounded-xl bg-[#F4F8FC] p-3 border border-[#DCE8F4] text-xs font-medium text-[#334155]">
+              <span className="font-bold text-[#1677FF]">Demo Verification OTP:</span> Enter code <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#CBD5E1]">1234</span> or click Auto Verify below.
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                  4-Digit Verification Code
+                </label>
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={verificationCode}
+                  onChange={(e) => setVerificationCode(e.target.value)}
+                  placeholder="1234"
+                  className="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-2.5 text-center font-mono text-lg font-bold tracking-widest text-[#091536] focus:border-[#1677FF] focus:outline-none"
+                />
+              </div>
+
+              {verificationError && (
+                <p className="text-xs font-semibold text-[#C62E40]">{verificationError}</p>
+              )}
+
+              <div className="flex flex-col gap-2 pt-2 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={isVerifying}
+                  onClick={() => handleConfirmVerification('AUTO_VERIFY')}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#31E6B1] px-4 py-3 text-xs font-black text-[#071B2F] shadow-md transition hover:bg-[#55EFC1]"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Auto-Verify &amp; Proceed
+                </button>
+                <button
+                  type="button"
+                  disabled={isVerifying}
+                  onClick={() => handleConfirmVerification()}
+                  className="inline-flex items-center justify-center rounded-xl bg-[#1677FF] px-4 py-3 text-xs font-bold text-white transition hover:bg-[#1562D6]"
+                >
+                  Verify Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthLayout>
   );
 }
+

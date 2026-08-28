@@ -821,10 +821,36 @@ export function TrainerRegistrationWizard({
     }
   }
 
+  function handleAutoFillDemoProfile() {
+    setFullName("Vikram Malhotra");
+    setEmail("vikram.malhotra@experttrainers.com");
+    setMobile("+91 98765 43210");
+    setCurrentCity("Mumbai");
+    setLinkedin("https://linkedin.com/in/vikram-malhotra-coach");
+    setHeadline("Senior Executive Leadership & Organizational Change Facilitator");
+    setBio("Over 15 years of corporate facilitation experience training leaders at Tata, Infosys, Deloitte, and HDFC Bank across Asia-Pacific.");
+    setSelectedRoles(["Corporate Trainer", "Executive Coach", "Leadership Coach"]);
+    setSelectedSpecialisations(["Leadership", "People Management", "Strategic Thinking", "Emotional Intelligence", "Decision Making"]);
+    setTotalExperience("15–20 years");
+    setTrainingExperience("10–15 years");
+    setWorkedInCorporate("Yes");
+    setWorkedIndustries(["BFSI & Banking", "IT & Technology", "Consulting & Professional Services"]);
+    setTrainedIndustries(["BFSI & Banking", "IT & Technology", "Healthcare & Pharma", "FMCG & Retail"]);
+    setTargetAudiences(["Middle management", "Senior management", "CXOs"]);
+    setGroupSize("26–50");
+    setDeliveryFormatList(["Classroom", "Virtual", "Hybrid", "Workshops"]);
+    setHighestQualification("Post Graduate / MBA / Master's");
+    setCertificationsList(["ICF PCC / MCC Coach", "Lean Six Sigma Black Belt", "PMP - Project Management"]);
+    setTaughtRecognisedOrgs("Yes");
+    setNotableOrganisations(["Tata Consultancy Services", "HDFC Bank", "Deloitte", "Infosys", "Wipro"]);
+    setInterestedAssignments(["Full-day corporate training", "Leadership programmes", "Executive coaching", "Multi-day programmes"]);
+    setStep(steps.length - 1);
+  }
+
   function handleFinalSubmit() {
     const finalProfile = {
-      fullName: fullName || "Rahul Sharma",
-      email,
+      fullName: fullName || "Vikram Malhotra",
+      email: email || "vikram.malhotra@experttrainers.com",
       mobile,
       city: currentCity || "Mumbai",
       linkedin,
@@ -855,6 +881,10 @@ export function TrainerRegistrationWizard({
 
     if (typeof window !== "undefined") {
       localStorage.setItem("atlas_trainer_profile", JSON.stringify(finalProfile));
+      localStorage.setItem("trainer_verification_status", "pending");
+      localStorage.setItem("trainer_confirmation_email_sent", "true");
+      localStorage.setItem("user_name", finalProfile.fullName);
+      localStorage.setItem("registered_email", finalProfile.email);
     }
 
     if (onComplete) {
@@ -1151,7 +1181,7 @@ export function TrainerRegistrationWizard({
           <section className="flex items-start">
             <div className="w-full overflow-hidden rounded-2xl bg-white shadow-xl border border-slate-200/80">
               {/* Step Header */}
-              <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4 sm:px-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 px-6 py-4 sm:px-8">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#0E9F88]">
                     Stage {currentStageIndex + 1}: {stages[currentStageIndex].title} · Step {step + 1} of{" "}
@@ -1162,6 +1192,14 @@ export function TrainerRegistrationWizard({
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">{currentStep.subtitle}</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleAutoFillDemoProfile}
+                  className="inline-flex items-center gap-1.5 self-start sm:self-auto rounded-full border border-[#0E9F88]/30 bg-[#E8FAF5] px-3.5 py-1.5 text-xs font-black text-[#0E9F88] transition hover:bg-[#D4F5EC]"
+                >
+                  <Sparkles className="size-3.5 text-[#0E9F88]" />
+                  Auto-Fill Demo Profile
+                </button>
               </div>
 
               {/* Step Form Container */}
