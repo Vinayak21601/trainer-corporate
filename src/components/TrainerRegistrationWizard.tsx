@@ -1050,14 +1050,14 @@ export function TrainerRegistrationWizard({
                 <button
                   type="button"
                   onClick={() => router.push("/")}
-                  className="flex items-center gap-2.5 text-left"
+                  aria-label="AtlasCircle"
+                  className="flex items-center text-left"
                 >
-                  <div className="flex size-9 items-center justify-center rounded-xl bg-[#0E9F88] text-xs font-black text-white shadow-sm">
-                    A
-                  </div>
-                  <span className="atlas-display text-base font-black text-[#091536] tracking-tight">
-                    Atlas
-                  </span>
+                  <img
+                    src="/logo/atlas-logo.webp"
+                    alt="AtlasCircle"
+                    className="h-9 w-auto object-contain"
+                  />
                 </button>
                 <span className="flex items-center gap-1 rounded-full bg-[#E8FAF5] px-2.5 py-1 text-[10px] font-extrabold text-[#0E9F88] border border-[#0E9F88]/20">
                   <BadgeCheck className="size-3" /> Trainer Onboarding

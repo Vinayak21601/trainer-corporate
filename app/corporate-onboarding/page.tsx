@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Building2, 
   User, 
@@ -16,7 +17,18 @@ import {
   ShieldCheck,
   Award
 } from 'lucide-react';
-import { AuthLayout } from '@/src/components/auth/AuthLayout';
+import { HeroBackdrop } from '@/src/components/landing/HeroBackdrop';
+
+const priorityOptions = [
+  'Executive Leadership & Management',
+  'AI & Technology Upskilling',
+  'Sales Enablement & Negotiation',
+  'Soft Skills & Communication',
+  'DEI & Workplace Culture',
+  'Product & Agile Methodologies',
+  'Compliance & Cybersecurity',
+  'Functional & Technical Skills'
+];
 
 export default function CorporateOnboardingPage() {
   const router = useRouter();
@@ -25,7 +37,19 @@ export default function CorporateOnboardingPage() {
   const [companyName, setCompanyName] = useState('');
   const [industry, setIndustry] = useState('IT & Financial Technology');
   const [companySize, setCompanySize] = useState('500 - 1,000 Employees');
-  const [trainingFocus, setTrainingFocus] = useState('Executive Leadership & Tech Upskilling');
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([
+    'Executive Leadership & Management',
+    'AI & Technology Upskilling'
+  ]);
+  const [customPriority, setCustomPriority] = useState('');
+
+  const togglePriority = (priority: string) => {
+    setSelectedPriorities(prev =>
+      prev.includes(priority)
+        ? prev.filter(p => p !== priority)
+        : [...prev, priority]
+    );
+  };
   
   // POC Details
   const [pocName, setPocName] = useState('');
@@ -55,7 +79,8 @@ export default function CorporateOnboardingPage() {
     setCompanyName('Acme Global Technologies');
     setIndustry('IT & Financial Technology');
     setCompanySize('500 - 1,000 Employees');
-    setTrainingFocus('Executive Leadership & Tech Upskilling');
+    setSelectedPriorities(['Executive Leadership & Management', 'AI & Technology Upskilling', 'Soft Skills & Communication']);
+    setCustomPriority('');
     setPocName('Sarah Jenkins');
     setPocDesignation('Head of Learning & Leadership Development');
     setPocPhone('+91 98765 12345');
@@ -67,11 +92,16 @@ export default function CorporateOnboardingPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const finalTrainingFocus = [
+      ...selectedPriorities,
+      ...(customPriority.trim() ? [customPriority.trim()] : [])
+    ].join(', ') || 'Executive Leadership & Management';
+
     const corporateProfile = {
       companyName: companyName || 'Acme Global Technologies',
       industry,
       companySize,
-      trainingFocus,
+      trainingFocus: finalTrainingFocus,
       pocName: pocName || 'Sarah Jenkins',
       pocDesignation: pocDesignation || 'Head of L&D',
       pocPhone: pocPhone || '+91 98765 12345',
@@ -86,40 +116,53 @@ export default function CorporateOnboardingPage() {
     }
 
     setTimeout(() => {
-      router.push('/create-requirement');
+      router.push('/thankyou?type=corporate');
     }, 450);
   };
 
   return (
-    <AuthLayout mode="register">
-      <div className="relative overflow-hidden rounded-[24px] border border-white bg-white/90 p-4 min-[400px]:p-5 sm:p-8 shadow-[0_24px_70px_rgba(32,75,114,0.14)] backdrop-blur-2xl">
-        <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,#11BFA5,#176BFF,transparent)]" />
-        
-        {/* Header Section */}
-        <div className="mb-6">
-          <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-2.5">
-            <div className="inline-flex self-start items-center gap-1.5 rounded-full border border-[#0E9F88]/30 bg-[#E8FAF5] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#0E8D76]">
+    <div className="relative min-h-screen bg-[#FBFAF7] font-sans text-[#091536] antialiased selection:bg-[#0E9F88] selection:text-white pb-16">
+      <HeroBackdrop />
+
+      {/* Sleek Top Navigation Header */}
+      <header className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-4 py-6 sm:px-6">
+        <Link href="/" className="atlas-focus flex items-center gap-2.5 rounded-xl group">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 border border-[#E1E9F2]">
+            <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain mix-blend-multiply" />
+          </div>
+          <div className="flex flex-col">
+            <span className="atlas-display text-xl font-black tracking-tight text-[#081536] leading-none">AtlasCircle</span>
+            <span className="text-[9px] font-bold text-[#5A6680] tracking-tight mt-0.5">Corporate Onboarding</span>
+          </div>
+        </Link>
+
+        <button
+          type="button"
+          onClick={handleFillDemoProfile}
+          className="inline-flex items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-4 py-1.5 text-xs font-black text-[#1677FF] transition hover:bg-[#DDF0FF] shadow-xs"
+        >
+          <Sparkles className="h-3.5 w-3.5 text-[#1677FF]" />
+          Auto-Fill Demo Profile
+        </button>
+      </header>
+
+      {/* Main Single-Page Centered Form Container */}
+      <main className="relative z-10 mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="relative overflow-hidden rounded-[24px] border border-[#DCE8F4] bg-white p-6 sm:p-10 shadow-[0_24px_70px_rgba(32,75,114,0.08)]">
+          {/* Header Section */}
+          <div className="mb-8 border-b border-slate-100 pb-6">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-[#0E9F88]/30 bg-[#E8FAF5] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#0E8D76] mb-3">
               <ShieldCheck className="h-3.5 w-3.5 text-[#0E9F88]" />
               Corporate Account Verified
             </div>
 
-            <button
-              type="button"
-              onClick={handleFillDemoProfile}
-              className="inline-flex self-start min-[480px]:self-auto items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-3.5 py-1 text-[10px] font-black text-[#1677FF] transition hover:bg-[#DDF0FF]"
-            >
-              <Sparkles className="h-3 w-3 text-[#1677FF]" />
-              Auto-Fill Demo Profile
-            </button>
+            <h1 className="atlas-display text-2xl sm:text-3xl font-black tracking-tight text-[#091536]">
+              Complete Corporate Profile
+            </h1>
+            <p className="mt-1 text-xs sm:text-sm font-medium text-[#657189]">
+              Provide 5 quick details about your organization &amp; primary point of contact to post training requirements.
+            </p>
           </div>
-
-          <h1 className="atlas-display mt-3 text-2xl sm:text-3xl font-black tracking-tight text-[#091536]">
-            Complete Corporate Profile
-          </h1>
-          <p className="mt-1 text-xs font-medium text-[#5A6680]">
-            Provide 5 quick details about your organization &amp; primary point of contact to post training requirements.
-          </p>
-        </div>
 
         {/* 5-Field Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -220,17 +263,46 @@ export default function CorporateOnboardingPage() {
 
           {/* FIELD 3: Training Priorities */}
           <div className="rounded-2xl border border-[#DCE8F4] bg-[#F9FCFF] p-4 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-black text-[#091536] uppercase tracking-wider">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0E9F88] text-[10px] font-bold text-white">3</span>
-              Primary L&amp;D Training Priorities
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+              <div className="flex items-center gap-2 text-xs font-black text-[#091536] uppercase tracking-wider">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#0E9F88] text-[10px] font-bold text-white">3</span>
+                Primary L&amp;D Training Priorities
+              </div>
+              <span className="text-[10px] font-bold text-[#0E9F88]">Select multiple priorities</span>
             </div>
 
-            <div>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {priorityOptions.map((option) => {
+                const isSelected = selectedPriorities.includes(option);
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => togglePriority(option)}
+                    className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all ${
+                      isSelected
+                        ? 'border-[#0E9F88] bg-[#E8FAF5] text-[#0E8D76] shadow-xs'
+                        : 'border-[#CBD5E1] bg-white text-[#475569] hover:border-[#94A3B8] hover:bg-slate-50'
+                    }`}
+                  >
+                    <span className={`flex h-4 w-4 items-center justify-center rounded-md border ${isSelected ? 'border-[#0E9F88] bg-[#0E9F88] text-white' : 'border-[#CBD5E1] bg-white'}`}>
+                      {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
+                    </span>
+                    <span>{option}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="pt-1">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+                Custom / Additional Priority
+              </label>
               <input
                 type="text"
-                value={trainingFocus}
-                onChange={(e) => setTrainingFocus(e.target.value)}
-                placeholder="e.g. Leadership Development, AI Upskilling, Communication, Sales"
+                value={customPriority}
+                onChange={(e) => setCustomPriority(e.target.value)}
+                placeholder="e.g. Design Thinking, OKR Frameworks, Executive Coaching"
                 className="w-full rounded-xl border border-[#CBD5E1] bg-white px-3 py-2 text-xs font-semibold text-[#091536] placeholder-[#94A3B8] focus:border-[#0E9F88] focus:outline-none"
               />
             </div>
@@ -333,11 +405,12 @@ export default function CorporateOnboardingPage() {
             {isSubmitting ? (
               <><span className="h-4 w-4 animate-spin rounded-full border-2 border-white/25 border-t-white" /> Saving Corporate Profile…</>
             ) : (
-              <>Save Profile &amp; Post Requirement <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></>
+              <>Save Profile <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></>
             )}
           </button>
         </form>
       </div>
-    </AuthLayout>
-  );
+    </main>
+  </div>
+);
 }

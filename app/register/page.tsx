@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Building2, Check, LockKeyhole, Mail, UserRound, UsersRound, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Building2, Check, LockKeyhole, Mail, UserRound, UsersRound, Sparkles, ShieldCheck, CheckCircle2, GraduationCap } from 'lucide-react';
 import { AuthLayout } from '@/src/components/auth/AuthLayout';
 import { AuthField } from '@/src/components/auth/AuthField';
 
-type AccountType = 'organization' | 'trainer';
+type AccountType = 'organization' | 'trainer' | 'institution';
 type RegisterErrors = Partial<Record<'name' | 'email' | 'organization' | 'password' | 'terms', string>>;
 
 export default function RegisterPage() {
@@ -28,13 +28,22 @@ export default function RegisterPage() {
   const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get('role') === 'trainer') setAccountType('trainer');
+    const roleParam = new URLSearchParams(window.location.search).get('role');
+    if (roleParam === 'trainer') setAccountType('trainer');
+    else if (roleParam === 'institution') setAccountType('institution');
   }, []);
 
   const handleFillDemoData = () => {
     if (accountType === 'trainer') {
       setName('Vikram Malhotra');
       setEmail('vikram.malhotra@experttrainers.com');
+      setPassword('password123');
+      setAcceptedTerms(true);
+      setErrors({});
+    } else if (accountType === 'institution') {
+      setName('Dr. Ramesh Rao');
+      setEmail('ramesh.rao@nit-campus.edu');
+      setOrganization('National Institute of Technology');
       setPassword('password123');
       setAcceptedTerms(true);
       setErrors({});
@@ -53,7 +62,9 @@ export default function RegisterPage() {
     const nextErrors: RegisterErrors = {};
     if (name.trim().length < 2) nextErrors.name = 'Enter your full name.';
     if (!/^\S+@\S+\.\S+$/.test(email)) nextErrors.email = 'Enter a valid work email address.';
-    if (accountType === 'organization' && organization.trim().length < 2) nextErrors.organization = 'Enter your organization name.';
+    if ((accountType === 'organization' || accountType === 'institution') && organization.trim().length < 2) {
+      nextErrors.organization = accountType === 'institution' ? 'Enter institution name.' : 'Enter organization name.';
+    }
     if (password.length < 8) nextErrors.password = 'Use at least 8 characters.';
     if (!acceptedTerms) nextErrors.terms = 'Accept the terms to continue.';
     setErrors(nextErrors);
@@ -84,7 +95,7 @@ export default function RegisterPage() {
         }
         setShowVerificationModal(false);
         setIsSubmitting(true);
-        window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-registration' : '/corporate-onboarding'), 400);
+        window.setTimeout(() => router.push(accountType === 'trainer' ? '/trainer-registration' : accountType === 'institution' ? '/org-institute-form' : '/corporate-onboarding'), 400);
       } else {
         setIsVerifying(false);
         setVerificationError('Invalid verification code. Please enter 1234 or click Auto-Verify.');
@@ -108,22 +119,23 @@ export default function RegisterPage() {
               Auto-Fill Demo Data
             </button>
           </div>
-          <h1 className="atlas-display mt-1.5 text-2xl font-black tracking-tight text-[#091536]">Create your Atlas account</h1>
+          <h1 className="atlas-display mt-1.5 text-2xl font-black tracking-tight text-[#091536]">Create your AtlasCircle account</h1>
           <p className="mt-1 text-xs font-medium text-[#657189]">Choose how you’ll use the marketplace.</p>
         </div>
 
-        <div className="mb-4 grid grid-cols-2 gap-3" role="radiogroup" aria-label="Account type">
+        <div className="mb-4 grid grid-cols-3 gap-2.5" role="radiogroup" aria-label="Account type">
           {([
-            { id: 'organization' as const, label: 'I’m hiring trainers', detail: 'For L&D teams', icon: Building2 },
-            { id: 'trainer' as const, label: 'I’m a trainer', detail: 'For facilitators', icon: UsersRound },
-          ]).map(({ id, label, detail, icon: Icon }) => {
+            { id: 'organization' as const, label: 'I’m hiring trainers', detail: 'For L&D teams', icon: Building2, activeColor: 'border-[#23C99A] bg-[#F0FCF8] text-[#0E9F88]' },
+            { id: 'trainer' as const, label: 'I’m a trainer', detail: 'For facilitators', icon: UsersRound, activeColor: 'border-[#1677FF] bg-[#EEF5FF] text-[#1677FF]' },
+            { id: 'institution' as const, label: 'Colleges & Academies', detail: 'For campuses', icon: GraduationCap, activeColor: 'border-[#7C3AED] bg-[#F3E8FF] text-[#7C3AED]' },
+          ]).map(({ id, label, detail, icon: Icon, activeColor }) => {
             const selected = accountType === id;
             return (
-              <button key={id} type="button" role="radio" aria-checked={selected} onClick={() => setAccountType(id)} className={`atlas-focus group relative rounded-xl border px-3 py-2.5 text-left transition ${selected ? 'border-[#23C99A] bg-[linear-gradient(135deg,#F0FCF8,#F7FFFC)] shadow-[0_8px_22px_rgba(35,201,154,0.10)]' : 'border-[#D9E3ED] bg-[#FBFDFF] hover:border-[#AFC5D9] hover:bg-white'}`}>
-                {selected && <span className="absolute right-2.5 top-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#23C99A] text-white"><Check className="h-3 w-3" /></span>}
-                <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${selected ? 'bg-[#DDF8EF] text-[#13A97D]' : 'bg-[#EAF4FF] text-[#2584FF]'}`}><Icon className="h-4 w-4" /></span>
-                <span className="mt-1.5 block text-[11px] font-black text-[#172343]">{label}</span>
-                <span className="mt-0.5 block text-[10px] font-semibold text-[#7B879B]">{detail}</span>
+              <button key={id} type="button" role="radio" aria-checked={selected} onClick={() => setAccountType(id)} className={`atlas-focus group relative rounded-xl border p-2.5 text-left transition ${selected ? `${activeColor} shadow-xs font-bold` : 'border-[#D9E3ED] bg-[#FBFDFF] hover:border-[#AFC5D9] hover:bg-white'}`}>
+                {selected && <span className="absolute right-2 top-2 flex h-4 w-4 items-center justify-center rounded-full bg-[#23C99A] text-white"><Check className="h-2.5 w-2.5 stroke-[3]" /></span>}
+                <span className={`flex h-7 w-7 items-center justify-center rounded-lg ${selected ? 'bg-white shadow-xs' : 'bg-slate-100 text-slate-500'}`}><Icon className="h-4 w-4" /></span>
+                <span className="mt-2 block text-[11px] font-black text-[#172343]">{label}</span>
+                <span className="mt-0.5 block text-[9px] font-semibold text-[#7B879B]">{detail}</span>
               </button>
             );
           })}
@@ -133,7 +145,18 @@ export default function RegisterPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <AuthField id="name" label="Full name" icon={UserRound} autoComplete="name" placeholder="Jane Smith" value={name} onChange={(e) => setName(e.target.value)} error={errors.name} />
             <AuthField id="register-email" label="Work email" icon={Mail} type="email" autoComplete="email" placeholder="name@company.com" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
-            {accountType === 'organization' && <AuthField id="organization" label="Organization name" icon={Building2} autoComplete="organization" placeholder="Acme Corporation" value={organization} onChange={(e) => setOrganization(e.target.value)} error={errors.organization} />}
+            {(accountType === 'organization' || accountType === 'institution') && (
+              <AuthField
+                id="organization"
+                label={accountType === 'institution' ? 'Institution / Campus Name' : 'Organization Name'}
+                icon={accountType === 'institution' ? GraduationCap : Building2}
+                autoComplete="organization"
+                placeholder={accountType === 'institution' ? 'National Institute of Technology' : 'Acme Corporation'}
+                value={organization}
+                onChange={(e) => setOrganization(e.target.value)}
+                error={errors.organization}
+              />
+            )}
             <AuthField id="register-password" label="Password" icon={LockKeyhole} type="password" autoComplete="new-password" placeholder="At least 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
           </div>
           <p className={`flex items-center gap-1.5 text-[10px] font-semibold ${password.length >= 8 ? 'text-[#14966F]' : 'text-[#7B879B]'}`}><Check className="h-3 w-3" />Password must be at least 8 characters</p>

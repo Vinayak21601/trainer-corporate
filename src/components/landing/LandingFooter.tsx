@@ -27,8 +27,13 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
           <div className="grid gap-8 border-b border-white/12 pb-10 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#18BFA5] text-sm font-black text-white">A</span>
-                <span className="text-sm font-black uppercase text-[#7EE7D0]">{trainerExperience ? 'Your training career, elevated' : 'Corporate learning, simplified'}</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-sm">
+                  <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="atlas-display text-base font-black tracking-tight text-white leading-none">AtlasCircle</span>
+                  <span className="text-[10px] font-bold text-[#7EE7D0] tracking-tight mt-0.5">{trainerExperience ? 'Your training career, elevated' : 'Corporate learning, simplified'}</span>
+                </div>
               </div>
               <h2 className="mt-6 max-w-2xl text-[24px] font-extrabold leading-tight sm:text-[32px]">
                 {trainerExperience ? 'Turn your expertise into meaningful corporate work.' : 'Build stronger teams with the right experts.'}
@@ -50,8 +55,8 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
             transition={{ duration: 0.7, ease: 'easeOut' }}
             className="overflow-hidden border-b border-white/12 py-10 text-center"
           >
-            <div className="atlas-display text-[76px] font-black leading-[0.78] text-white sm:text-[128px] lg:text-[180px]">
-              ATLAS
+            <div className="atlas-display text-[48px] font-black leading-[0.85] tracking-tight text-white sm:text-[88px] lg:text-[130px]">
+              ATLASCIRCLE
             </div>
           </motion.div>
 
@@ -78,7 +83,7 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
           </div>
 
           <div className="flex flex-col gap-4 border-t border-white/12 pt-6 text-[11px] font-medium text-[#8290AA] sm:flex-row sm:items-center sm:justify-between">
-            <p>© 2026 Project Atlas. Corporate Trainer & Facilitator Platform.</p>
+            <p>© 2026 AtlasCircle. Corporate Trainer &amp; Facilitator Platform.</p>
             <div className="flex flex-wrap gap-5">
               <a href="#" className="transition-colors hover:text-white">Terms</a>
               <a href="#" className="transition-colors hover:text-white">Privacy</a>

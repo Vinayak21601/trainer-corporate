@@ -21,9 +21,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ shortlistCount }) => {
 
   return (
     <aside className="sticky top-0 hidden h-screen w-[194px] shrink-0 flex-col border-r border-[#D4DEE9] bg-white px-4 py-7 lg:flex">
-      <button onClick={() => router.push('/')} className="flex items-center gap-2.5 px-2 text-left">
-        <span className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#1BAE9A] text-base font-black text-white">A</span>
-        <span className="text-[23px] font-black tracking-tight text-[#071638]">Atlas</span>
+      <button onClick={() => router.push('/')} aria-label="AtlasCircle" className="flex items-center px-2 text-left">
+        <img
+          src="/logo/atlas-logo.webp"
+          alt="AtlasCircle"
+          className="h-10 w-auto object-contain"
+        />
       </button>
       <nav className="mt-8 space-y-2" aria-label="Dashboard navigation">
         {navItems.map(({ label, icon: Icon, path, badge }) => {

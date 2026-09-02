@@ -63,15 +63,13 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = ({
       {/* TOP NAVIGATION BAR FOR TRAINER PORTAL */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white/95 px-4 py-3 shadow-xs backdrop-blur-md sm:px-8">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#1677FF] font-black text-white shadow-md shadow-[#1677FF]/20">
-            A
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="atlas-display text-base font-black text-[#091536]">Atlas</span>
-              <span className="rounded-md bg-[#EEF5FF] px-2 py-0.5 text-[10px] font-black text-[#1677FF]">Trainer Portal</span>
-            </div>
-          </div>
+          <img
+            src="/logo/atlas-logo.webp"
+            alt="AtlasCircle"
+            className="h-9 w-auto object-contain cursor-pointer"
+            onClick={() => router.push('/')}
+          />
+          <span className="rounded-md bg-[#EEF5FF] px-2 py-0.5 text-[10px] font-black text-[#1677FF]">Trainer Portal</span>
         </div>
 
         <button

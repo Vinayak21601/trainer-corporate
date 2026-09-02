@@ -12,7 +12,7 @@ export default function CreateRequirementPage() {
     <CreateRequirementWizard
       onComplete={(req) => {
         addRequirement(req);
-        router.push('/experts');
+        router.push('/thankyou?type=requirement');
       }}
       onCancel={() => router.push('/requirements')}
       onOpenAiAssistant={openAiAssistant}

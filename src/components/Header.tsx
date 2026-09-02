@@ -14,7 +14,7 @@ export const Header: React.FC<HeaderProps> = () => {
     <header className="sticky top-0 z-30 flex h-[68px] items-center justify-between border-b border-[#E3EAF2] bg-white/95 px-4 backdrop-blur sm:px-6">
       <div className="flex items-center gap-3">
         <button className="flex h-9 w-9 items-center justify-center rounded-[9px] border border-[#E1E9F2] text-[#53617A] lg:hidden"><Menu className="h-4 w-4" /></button>
-        <button onClick={() => router.push('/')} className="flex items-center gap-2 lg:hidden"><span className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-[#18BFA5] text-xs font-black text-white">A</span><span className="font-black text-[#091536]">Atlas</span></button>
+        <button onClick={() => router.push('/')} aria-label="AtlasCircle" className="flex items-center lg:hidden"><img src="/logo/atlas-logo.webp" alt="AtlasCircle" className="h-8 w-auto object-contain" /></button>
         <span className="hidden text-sm font-black capitalize text-[#142344] lg:block">{pageName}</span>
       </div>
       <div className="flex items-center gap-1.5 sm:gap-3">

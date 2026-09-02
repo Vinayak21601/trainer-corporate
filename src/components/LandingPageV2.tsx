@@ -20,7 +20,17 @@ import {
   LogIn,
   UserPlus,
   FileText,
-  GraduationCap
+  GraduationCap,
+  CheckCircle2,
+  Clock,
+  Star,
+  TrendingUp,
+  Briefcase,
+  UserRound,
+  Mail,
+  LockKeyhole,
+  Check,
+  UsersRound
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trainer } from '../types';
@@ -47,6 +57,100 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const [activePathRole, setActivePathRole] = useState<'corporate' | 'trainer' | 'institution'>('corporate');
+  const [activePreviewTab, setActivePreviewTab] = useState<'dashboard' | 'matches' | 'briefs' | 'analytics'>('dashboard');
+
+  // Embedded Register Form States
+  const [regRole, setRegRole] = useState<'corporate' | 'trainer' | 'institution'>('corporate');
+  const [regName, setRegName] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regOrg, setRegOrg] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regTerms, setRegTerms] = useState(false);
+  const [regErrors, setRegErrors] = useState<Record<string, string>>({});
+  const [regIsSubmitting, setRegIsSubmitting] = useState(false);
+
+  // Email verification modal states
+  const [showRegModal, setShowRegModal] = useState(false);
+  const [regOtpCode, setRegOtpCode] = useState('');
+  const [regOtpError, setRegOtpError] = useState('');
+  const [regIsVerifying, setRegIsVerifying] = useState(false);
+
+  const scrollToRegisterForm = () => {
+    const el = document.getElementById('inline-register-form');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const handleFillDemoReg = () => {
+    if (regRole === 'trainer') {
+      setRegName('Vikram Malhotra');
+      setRegEmail('vikram.malhotra@experttrainers.com');
+      setRegPassword('password123');
+      setRegTerms(true);
+      setRegErrors({});
+    } else if (regRole === 'institution') {
+      setRegName('Dr. Ramesh Rao');
+      setRegEmail('ramesh.rao@nit-campus.edu');
+      setRegOrg('National Institute of Technology');
+      setRegPassword('password123');
+      setRegTerms(true);
+      setRegErrors({});
+    } else {
+      setRegName('Sarah Jenkins');
+      setRegEmail('sarah.j@acmecorp.com');
+      setRegOrg('Acme Corporation');
+      setRegPassword('password123');
+      setRegTerms(true);
+      setRegErrors({});
+    }
+  };
+
+  const handleRegSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errs: Record<string, string> = {};
+    if (regName.trim().length < 2) errs.name = 'Enter your full name.';
+    if (!/^\S+@\S+\.\S+$/.test(regEmail)) errs.email = 'Enter a valid work email address.';
+    if ((regRole === 'corporate' || regRole === 'institution') && regOrg.trim().length < 2) {
+      errs.org = regRole === 'institution' ? 'Enter institution name.' : 'Enter organization name.';
+    }
+    if (regPassword.length < 8) errs.password = 'Use at least 8 characters.';
+    if (!regTerms) errs.terms = 'Accept terms to continue.';
+    setRegErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
+    setShowRegModal(true);
+  };
+
+  const handleConfirmRegVerification = (codeToVerify = regOtpCode) => {
+    setRegIsVerifying(true);
+    setRegOtpError('');
+
+    setTimeout(() => {
+      if (codeToVerify.trim() === '' || codeToVerify.trim() === '1234' || codeToVerify === 'AUTO_VERIFY') {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('onboarding_user', JSON.stringify({
+            name: regName,
+            email: regEmail,
+            organization: regOrg,
+            accountType: regRole === 'trainer' ? 'trainer' : regRole === 'institution' ? 'institution' : 'organization',
+            emailVerified: true,
+            verifiedAt: new Date().toISOString()
+          }));
+          localStorage.setItem('registered_email', regEmail);
+          localStorage.setItem('user_name', regName);
+        }
+        setShowRegModal(false);
+        setRegIsSubmitting(true);
+        window.setTimeout(() => {
+          router.push(regRole === 'trainer' ? '/trainer-registration' : regRole === 'institution' ? '/org-institute-form' : '/corporate-onboarding');
+        }, 400);
+      } else {
+        setRegIsVerifying(false);
+        setRegOtpError('Invalid code. Enter 1234 or click Auto-Verify.');
+      }
+    }, 400);
+  };
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (onExploreExperts) {
@@ -57,27 +161,39 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
   };
 
   const handleTrainerSignUp = () => {
-    router.push('/register?role=trainer');
+    setRegRole('trainer');
+    setActivePathRole('trainer');
+    scrollToRegisterForm();
   };
 
   const handleTrainerSignIn = () => {
-    router.push('/login?role=trainer');
+    setRegRole('trainer');
+    setActivePathRole('trainer');
+    scrollToRegisterForm();
   };
 
   const handleCorporateSignUp = () => {
-    router.push('/register?role=organization');
+    setRegRole('corporate');
+    setActivePathRole('corporate');
+    scrollToRegisterForm();
   };
 
   const handleCorporateSignIn = () => {
-    router.push('/login?role=corporate');
+    setRegRole('corporate');
+    setActivePathRole('corporate');
+    scrollToRegisterForm();
   };
 
   const handleInstitutionSignUp = () => {
-    router.push('/register?role=institution');
+    setRegRole('institution');
+    setActivePathRole('institution');
+    scrollToRegisterForm();
   };
 
   const handleInstitutionSignIn = () => {
-    router.push('/login?role=institution');
+    setRegRole('institution');
+    setActivePathRole('institution');
+    scrollToRegisterForm();
   };
 
   const navItems = [
@@ -100,13 +216,26 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
       >
         <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-full border border-[#DCE8F4] bg-white/85 px-3 py-2.5 shadow-[0_16px_44px_rgba(34,67,93,0.10)] backdrop-blur-2xl sm:gap-4 sm:px-5 sm:py-3" style={{ WebkitBackdropFilter: 'blur(24px) saturate(180%)' }}>
           {/* Logo */}
-          <button type="button" aria-label="Go to Atlas home" className="atlas-focus group flex shrink-0 items-center gap-2 rounded-xl text-left" onClick={() => router.push('/')}>
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#18BFA5] text-xs font-black text-white shadow-[0_10px_24px_rgba(49,151,242,0.18)] transition-all duration-300 group-hover:scale-105 sm:h-9 sm:w-9 sm:text-sm">
-              A
+          <button
+            type="button"
+            aria-label="Go to AtlasCircle home"
+            className="atlas-focus group flex shrink-0 items-center gap-2.5 rounded-xl text-left"
+            onClick={() => router.push('/')}
+          >
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6F8F5] to-[#EEF5FF] p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
+              <img
+                src="/logo/atlas-icon.png"
+                alt="AtlasCircle Icon"
+                className="h-full w-full object-contain mix-blend-multiply"
+              />
             </div>
             <div className="flex flex-col">
-              <span className="atlas-display text-sm font-black text-[#091536] sm:text-base leading-none">Atlas</span>
-              <span className="text-[9px] font-bold text-[#64748B] tracking-tight">Learn. Connect. Grow.</span>
+              <span className="atlas-display text-base font-black tracking-tight text-[#081536] sm:text-lg leading-none">
+                AtlasCircle
+              </span>
+              <span className="text-[9px] font-bold text-[#5B6B84] tracking-tight mt-0.5">
+                Expertise Meets Opportunity
+              </span>
             </div>
           </button>
 
@@ -126,10 +255,10 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
 
           {/* Action CTAs */}
           <div className="flex items-center gap-2">
-            <button onClick={() => router.push('/login')} className="atlas-focus hidden rounded-lg px-3 py-2 text-xs font-black text-[#526179] transition hover:bg-[#EEF7FF] hover:text-[#176BFF] sm:inline-flex">
+            <button onClick={scrollToRegisterForm} className="atlas-focus hidden rounded-lg px-3 py-2 text-xs font-black text-[#526179] transition hover:bg-[#EEF7FF] hover:text-[#176BFF] sm:inline-flex">
               Sign in
             </button>
-            <LandingButton onClick={() => router.push('/login')} size="sm" variant="secondary" className="hidden md:inline-flex">
+            <LandingButton onClick={scrollToRegisterForm} size="sm" variant="secondary" className="hidden md:inline-flex">
               Login
             </LandingButton>
             <button
@@ -170,10 +299,10 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
 
                 <div className="my-2 h-px bg-[#E7EEF5]" />
                 <div className="grid gap-2">
-                  <button onClick={() => { setIsMobileMenuOpen(false); router.push('/login'); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
+                  <button onClick={() => { setIsMobileMenuOpen(false); scrollToRegisterForm(); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
                     <LogIn className="h-4 w-4 text-[#176BFF]" />Sign in
                   </button>
-                  <button onClick={() => { setIsMobileMenuOpen(false); router.push('/register?role=trainer'); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
+                  <button onClick={() => { setIsMobileMenuOpen(false); handleTrainerSignUp(); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
                     <UserPlus className="h-4 w-4 text-[#11BFA5]" />Join as Trainer
                   </button>
                   <button onClick={() => { setIsMobileMenuOpen(false); handleCorporateSignUp(); }} className="atlas-focus flex items-center gap-2 rounded-xl bg-[#0D3270] px-3 py-2.5 text-left text-xs font-black text-white transition hover:bg-[#176BFF]">
@@ -210,7 +339,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
               </h1>
 
               <p className="max-w-xl text-[14px] font-medium leading-6 text-[#5A6680] sm:text-[16px] sm:leading-7">
-                Atlas is where organizations and professionals come together to learn, share and grow.
+                AtlasCircle is where organizations and professionals come together to learn, share and grow.
               </p>
 
               {/* SEARCH BOX COMPONENT (Original UI Glass styling) */}
@@ -354,7 +483,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
               </div>
               <div className="min-w-0">
                 <div className="text-xs font-black text-[#122044]">Active users 5,000+</div>
-                <div className="text-[10px] font-semibold text-[#6A7690]">Join thousands growing faster with Atlas.</div>
+                <div className="text-[10px] font-semibold text-[#6A7690]">Join thousands growing faster with AtlasCircle.</div>
               </div>
             </motion.div>
 
@@ -385,243 +514,826 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
         </div>
       </section>
 
-      {/* JOIN ATLAS TODAY THREE ROLE SECTION */}
-      <section id="choose-path" className="relative py-16 sm:py-24 lg:py-28 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
-        {/* Subtle decorative background glow spheres */}
-        <div className="pointer-events-none absolute left-1/4 top-10 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute right-1/4 bottom-10 h-96 w-96 rounded-full bg-teal-400/10 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/2 bottom-10 h-96 w-96 rounded-full bg-purple-400/10 blur-3xl" />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+      {/* JOIN ATLASCIRCLE TODAY TABBED ROLE SECTION */}
+      <section id="choose-path" className="relative py-14 sm:py-20 lg:py-24 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            eyebrow="JOIN ATLAS TODAY"
+            eyebrow="JOIN ATLASCIRCLE TODAY"
             title="Choose your path to get started"
-            description="Select whether you are an expert trainer, corporate L&D leader, or educational institution seeking facilitators."
+            description="Select your role below to explore tailored features, live AI matches, and specialized management tools."
           />
 
-          <div className="relative mt-8 sm:mt-14 grid grid-cols-3 gap-1.5 min-[380px]:gap-2 sm:gap-4 lg:gap-6 items-stretch">
-            {/* Trainer Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              whileHover={{ y: -6 }}
-              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#1677FF]/60 hover:shadow-[0_25px_60px_rgba(22,119,255,0.18)]"
-            >
-              {/* Card top glow bar */}
-              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#1677FF] via-[#2584FF] to-[#60A5FA] opacity-90" />
-
-              <div>
-                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
-                  {/* Icon Container */}
-                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#1677FF] to-[#2584FF] text-white shadow-md sm:shadow-lg shadow-[#1677FF]/25 transition-transform duration-300 group-hover:scale-105">
-                    <User className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
-                  </div>
-                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#D0E2FF] bg-[#EEF5FF] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#1677FF]">
-                    For Facilitators
-                  </span>
-                </div>
-
-                <h3 className="atlas-display mt-2 sm:mt-6 text-[11px] min-[380px]:text-xs sm:text-2xl lg:text-3xl font-black text-[#081536] leading-tight">
-                  Trainer
-                </h3>
-
-                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
-                  Share knowledge. Empower teams.
-                </p>
-
-                {/* Feature Bullet Points */}
-                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Verified expert profile showcasing outcomes</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Matched to training briefs aligned with skills</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#EEF5FF] text-[#1677FF] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Full control over availability, mode &amp; rates</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
-                <button
-                  type="button"
-                  onClick={handleTrainerSignUp}
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#1677FF] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#1677FF]/25 transition-all hover:bg-[#1562D6] active:scale-98"
-                >
-                  <span>Sign Up</span>
-                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleTrainerSignIn}
-                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#1677FF] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#1677FF] transition-all hover:bg-[#EEF5FF] active:scale-98"
-                >
-                  Log In
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Corporate Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.08 }}
-              whileHover={{ y: -6 }}
-              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#11BFA5]/60 hover:shadow-[0_25px_60px_rgba(17,191,165,0.18)]"
-            >
-              {/* Card top glow bar */}
-              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#11BFA5] via-[#10B981] to-[#34D399] opacity-90" />
-
-              <div>
-                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
-                  {/* Icon Container */}
-                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#11BFA5] to-[#10B981] text-white shadow-md sm:shadow-lg shadow-[#11BFA5]/25 transition-transform duration-300 group-hover:scale-105">
-                    <Building2 className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
-                  </div>
-                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#BDEBDD] bg-[#E8FAF5] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#0E8D76]">
-                    For L&amp;D Teams
-                  </span>
-                </div>
-
-                <h3 className="atlas-display mt-2 sm:mt-6 text-[11px] min-[380px]:text-xs sm:text-2xl lg:text-3xl font-black text-[#081536] leading-tight">
-                  Corporate
-                </h3>
-
-                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
-                  Find top trainers. Drive results.
-                </p>
-
-                {/* Feature Bullet Points */}
-                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Access top 1% verified corporate facilitators</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Post custom briefs &amp; receive proposals</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#E8FAF5] text-[#11BFA5] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">AI matchmaking with peer reviews</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
-                <button
-                  type="button"
-                  onClick={handleCorporateSignUp}
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#0E9F88] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#0E9F88]/25 transition-all hover:bg-[#0C8B77] active:scale-98"
-                >
-                  <span>Sign Up</span>
-                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCorporateSignIn}
-                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#0E9F88] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#0E9F88] transition-all hover:bg-[#E8FAF5] active:scale-98"
-                >
-                  Log In
-                </button>
-              </div>
-            </motion.div>
-
-            {/* Organisations / Institutions Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.16 }}
-              whileHover={{ y: -6 }}
-              className="group relative flex w-full flex-col justify-between overflow-hidden rounded-xl sm:rounded-[28px] border border-[#DCE8F4] bg-white/95 p-2 min-[380px]:p-3 sm:p-7 lg:p-9 shadow-[0_16px_40px_rgba(34,67,93,0.08)] backdrop-blur-2xl transition-all duration-300 hover:border-[#7C3AED]/60 hover:shadow-[0_25px_60px_rgba(124,58,237,0.18)]"
-            >
-              {/* Card top glow bar */}
-              <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-[#7C3AED] via-[#8B5CF6] to-[#A78BFA] opacity-90" />
-
-              <div>
-                <div className="flex flex-col min-[480px]:flex-row min-[480px]:items-center justify-between gap-1 sm:gap-3">
-                  {/* Icon Container */}
-                  <div className="flex h-8 w-8 min-[380px]:h-10 min-[380px]:w-10 sm:h-14 sm:w-14 lg:h-16 lg:w-16 shrink-0 items-center justify-center rounded-xl sm:rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#6366F1] text-white shadow-md sm:shadow-lg shadow-[#7C3AED]/25 transition-transform duration-300 group-hover:scale-105">
-                    <GraduationCap className="h-4 w-4 min-[380px]:h-5 min-[380px]:w-5 sm:h-7 sm:w-7 lg:h-8 lg:w-8 stroke-[2]" />
-                  </div>
-                  <span className="inline-block self-start min-[480px]:self-auto rounded-full border border-[#DDD6FE] bg-[#F3E8FF] px-1.5 py-0.5 sm:px-3.5 sm:py-1 text-[7px] min-[380px]:text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-[#6D28D9]">
-                    For Institutions
-                  </span>
-                </div>
-
-                <h3 className="atlas-display mt-2 sm:mt-6 text-[6.5px] min-[350px]:text-[7.5px] min-[400px]:text-[9px] min-[480px]:text-xs sm:text-base lg:text-xl xl:text-2xl font-black text-[#081536] leading-none whitespace-nowrap tracking-tight">
-                  Organisations / Institutions
-                </h3>
-
-                <p className="mt-1 text-[8px] min-[380px]:text-[9px] sm:text-xs lg:text-sm font-semibold text-[#5A6680] leading-tight min-h-[20px] min-[380px]:min-h-[24px] sm:min-h-0">
-                  Empower campus &amp; cohort training.
-                </p>
-
-                {/* Feature Bullet Points */}
-                <div className="my-2 sm:my-7 space-y-1.5 sm:space-y-3 border-t border-b border-[#F0F5FA] py-2 sm:py-5">
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Bulk faculty &amp; student cohort training</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Connect with accredited industry experts</span>
-                  </div>
-                  <div className="flex items-start gap-1 sm:gap-3 text-[8px] min-[380px]:text-[9px] sm:text-xs font-semibold text-[#334155]">
-                    <div className="flex h-3.5 w-3.5 sm:h-5 sm:w-5 shrink-0 items-center justify-center rounded-full bg-[#F3E8FF] text-[#7C3AED] mt-0.5">
-                      <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                    </div>
-                    <span className="leading-tight sm:leading-normal">Institutional dashboard &amp; certifications</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-1 sm:gap-3 pt-1 sm:pt-2">
-                <button
-                  type="button"
-                  onClick={handleInstitutionSignUp}
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-2 rounded-lg sm:rounded-xl bg-[#7C3AED] px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-white shadow-md shadow-[#7C3AED]/25 transition-all hover:bg-[#6D28D9] active:scale-98"
-                >
-                  <span>Sign Up</span>
-                  <ArrowRight className="h-2.5 w-2.5 sm:h-4 sm:w-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={handleInstitutionSignIn}
-                  className="w-full sm:w-24 lg:w-32 inline-flex items-center justify-center rounded-lg sm:rounded-xl border border-[#7C3AED] bg-white px-1 sm:px-5 py-1.5 sm:py-3 text-[9px] min-[380px]:text-[10px] sm:text-sm font-bold text-[#7C3AED] transition-all hover:bg-[#F3E8FF] active:scale-98"
-                >
-                  Log In
-                </button>
-              </div>
-            </motion.div>
+          {/* MAIN ROLE TABS BAR */}
+          <div className="mt-8 sm:mt-10 flex justify-center">
+            <div className="inline-flex max-w-full overflow-x-auto rounded-2xl border border-[#DCE8F4] bg-white p-1.5 shadow-sm">
+              {[
+                {
+                  id: 'corporate',
+                  label: 'Corporate & L&D',
+                  role: 'For L&D Teams',
+                  icon: Building2,
+                  activeBg: 'bg-[#0E9F88]',
+                  activeText: 'text-[#0E9F88]',
+                  lightBg: 'bg-[#E8FAF5]',
+                  badgeBorder: 'border-[#BDEBDD]',
+                },
+                {
+                  id: 'trainer',
+                  label: 'Facilitators & Trainers',
+                  role: 'For Facilitators',
+                  icon: User,
+                  activeBg: 'bg-[#1677FF]',
+                  activeText: 'text-[#1677FF]',
+                  lightBg: 'bg-[#EEF5FF]',
+                  badgeBorder: 'border-[#D0E2FF]',
+                },
+                {
+                  id: 'institution',
+                  label: 'Colleges & Institutions',
+                  role: 'For Institutions',
+                  icon: GraduationCap,
+                  activeBg: 'bg-[#7C3AED]',
+                  activeText: 'text-[#7C3AED]',
+                  lightBg: 'bg-[#F3E8FF]',
+                  badgeBorder: 'border-[#DDD6FE]',
+                },
+              ].map((tab) => {
+                const isActive = activePathRole === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => {
+                      setActivePathRole(tab.id as any);
+                      setRegRole(tab.id as any);
+                    }}
+                    className={`relative flex items-center gap-2.5 rounded-xl px-4 py-3 text-xs sm:text-sm font-bold transition-all duration-300 ${
+                      isActive
+                        ? 'text-slate-900 shadow-md shadow-slate-200/50'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50/80'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeRoleTabPill"
+                        className="absolute inset-0 rounded-xl bg-white shadow-sm border border-slate-200/80"
+                        transition={{ type: 'spring', stiffness: 400, damping: 35 }}
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center gap-2">
+                      <span
+                        className={`flex h-7 w-7 items-center justify-center rounded-lg ${
+                          isActive ? `${tab.activeBg} text-white` : 'bg-slate-100 text-slate-500'
+                        } transition-colors`}
+                      >
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <span>{tab.label}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+
+          {/* ACTIVE TAB SHOWCASE CONTAINER */}
+          <div className="mt-8 sm:mt-10">
+            <AnimatePresence mode="wait">
+              {activePathRole === 'corporate' && (
+                <motion.div
+                  key="corporate"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid lg:grid-cols-12 gap-8 items-center rounded-3xl border border-[#DCE8F4] bg-white p-6 sm:p-8 shadow-[0_12px_32px_rgba(14,159,136,0.06)]"
+                >
+                  {/* Left Column: Concise Value & CTAs */}
+                  <div className="lg:col-span-5 space-y-5">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#BDEBDD] bg-[#E8FAF5] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#0E8D76]">
+                      <Building2 className="h-3.5 w-3.5" />
+                      <span>For L&amp;D &amp; HR Teams</span>
+                    </div>
+
+                    <div>
+                      <h3 className="atlas-display text-2xl sm:text-3xl font-black text-[#081536] leading-tight">
+                        Source Verified Corporate Trainers in 24 Hours
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#5A6680] font-medium">
+                        Post your brief in 2 minutes. AtlasCircle AI matches verified domain experts with transparent pricing and milestone guarantees.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2.5 border-y border-[#F0F5FA] py-4">
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0E9F88]" />
+                        <span>Access top 1% verified corporate facilitators</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0E9F88]" />
+                        <span>Post custom briefs &amp; receive proposals</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0E9F88]" />
+                        <span>AI matchmaking with peer reviews</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={scrollToRegisterForm}
+                          className="inline-flex items-center gap-2 rounded-xl bg-[#0E9F88] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#0E9F88]/20 transition-all hover:bg-[#0C8B77] active:scale-98"
+                        >
+                          <FileText className="h-4 w-4" />
+                          <span>Post a Training Brief</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCorporateSignUp}
+                          className="inline-flex items-center gap-2 rounded-xl border border-[#0E9F88] bg-[#F4FBF9] px-4 py-3 text-xs sm:text-sm font-bold text-[#0E8D76] transition-all hover:bg-[#E8FAF5]"
+                        >
+                          <span>Sign Up as Enterprise</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3 w-3 text-[#0E9F88] shrink-0" />
+                        <span>Free to post • Instant matching • Zero platform fee</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Clean Light SaaS Preview */}
+                  <div className="lg:col-span-7">
+                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
+                      {/* Window Header */}
+                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
+                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / corporate / ai-matcher</span>
+                        </div>
+                        <span className="flex items-center gap-1 rounded-full bg-[#E8FAF5] px-2.5 py-0.5 text-[10px] font-bold text-[#0E8D76] border border-[#BDEBDD]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#0E9F88]" /> 3 Matches Ready
+                        </span>
+                      </div>
+
+                      {/* Interactive Sub-Tabs */}
+                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
+                        {[
+                          { id: 'dashboard', label: 'AI Shortlist' },
+                          { id: 'briefs', label: 'Active Brief' },
+                          { id: 'analytics', label: 'Metrics' },
+                        ].map((subTab) => (
+                          <button
+                            key={subTab.id}
+                            type="button"
+                            onClick={() => setActivePreviewTab(subTab.id as any)}
+                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                              activePreviewTab === subTab.id
+                                ? 'bg-white text-slate-900 border-t-2 border-[#0E9F88] shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                          >
+                            {subTab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Preview Window Content */}
+                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                        {activePreviewTab === 'dashboard' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                              <span className="font-bold text-slate-700">Top Recommended Facilitators</span>
+                              <span className="font-semibold text-[#0E8D76] text-[11px]">Ranked by Outcome Score</span>
+                            </div>
+
+                            <div className="grid gap-2.5">
+                              {[
+                                { name: 'Dr. Rajesh Verma', role: 'BFSI Leadership & Risk Facilitator', exp: '16+ yrs • Ex-McKinsey', rating: '4.95', match: '98% Match' },
+                                { name: 'Ananya Deshmukh', role: 'Enterprise Generative AI Adoption', exp: '11+ yrs • Trained TATA, Siemens', rating: '4.98', match: '96% Match' },
+                              ].map((expert) => (
+                                <div key={expert.name} className="flex items-center justify-between rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#0E9F88] transition-all">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E8FAF5] font-black text-[#0E8D76] text-xs border border-[#BDEBDD]">
+                                      {expert.name[0]}
+                                    </div>
+                                    <div>
+                                      <div className="text-xs font-bold text-slate-900">{expert.name}</div>
+                                      <div className="text-[11px] text-slate-500">{expert.role}</div>
+                                      <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                                        <span>{expert.exp}</span>
+                                        <span>•</span>
+                                        <span className="font-bold text-slate-700 inline-flex items-center gap-0.5">
+                                          <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
+                                          {expert.rating}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col items-end gap-1">
+                                    <span className="rounded-full bg-[#E8FAF5] px-2 py-0.5 text-[11px] font-black text-[#0E8D76]">
+                                      {expert.match}
+                                    </span>
+                                    <button
+                                      type="button"
+                                      onClick={handleCorporateSignUp}
+                                      className="rounded-md bg-[#0E9F88] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#0C8B77] transition"
+                                    >
+                                      Invite
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
+                              <span className="flex items-center gap-1">
+                                <Zap className="h-3.5 w-3.5 text-amber-500" />
+                                <span>Avg shortlist response: <strong>&lt; 24 hours</strong></span>
+                              </span>
+                              <span className="text-[#0E8D76]">100% Quality Guaranteed</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'briefs' && (
+                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
+                            <div className="flex justify-between font-bold text-slate-500">
+                              <span>Brief #REQ-9482</span>
+                              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                4 Proposals Received
+                              </span>
+                            </div>
+                            <div className="font-bold text-slate-900 text-sm">GenAI for Engineering &amp; Product Leaders</div>
+                            <div className="flex gap-2 text-[11px] text-slate-500">
+                              <span className="rounded bg-slate-100 px-2 py-0.5">25 VPs</span>
+                              <span className="rounded bg-slate-100 px-2 py-0.5">2 Days On-site</span>
+                              <span className="rounded bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700">Rs 1.8L</span>
+                            </div>
+                            <button type="button" onClick={handleCorporateSignUp} className="mt-2 w-full rounded-lg bg-[#0E9F88] py-2 text-xs font-bold text-white hover:bg-[#0C8B77]">
+                              Review Shortlisted Proposals
+                            </button>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'analytics' && (
+                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-[#0E9F88]">98.4%</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Satisfaction Rate</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-blue-600">&lt; 24h</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Shortlist Time</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-purple-600">5,000+</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Vetted Trainers</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activePathRole === 'trainer' && (
+                <motion.div
+                  key="trainer"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid lg:grid-cols-12 gap-8 items-center rounded-3xl border border-[#DCE8F4] bg-white p-6 sm:p-8 shadow-[0_12px_32px_rgba(22,119,255,0.06)]"
+                >
+                  {/* Left Column: Details & CTAs */}
+                  <div className="lg:col-span-5 space-y-5">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#D0E2FF] bg-[#EEF5FF] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#1677FF]">
+                      <User className="h-3.5 w-3.5" />
+                      <span>For Trainers &amp; Facilitators</span>
+                    </div>
+
+                    <div>
+                      <h3 className="atlas-display text-2xl sm:text-3xl font-black text-[#081536] leading-tight">
+                        High-Paying Corporate Briefs Direct to You
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#5A6680] font-medium">
+                        Connect directly with enterprise L&amp;D buyers looking for your expertise. Keep 100% of your commercial fees without agency cuts.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2.5 border-y border-[#F0F5FA] py-4">
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#1677FF]" />
+                        <span>Verified expert profile showcasing outcomes</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#1677FF]" />
+                        <span>Matched to training briefs aligned with skills</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#1677FF]" />
+                        <span>Full control over availability, mode &amp; rates</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleTrainerSignUp}
+                          className="inline-flex items-center gap-2 rounded-xl bg-[#1677FF] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#1677FF]/20 transition-all hover:bg-[#1562D6] active:scale-98"
+                        >
+                          <span>Join as Verified Trainer</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleTrainerSignIn}
+                          className="inline-flex items-center gap-2 rounded-xl border border-[#1677FF] bg-[#F4F8FF] px-4 py-3 text-xs sm:text-sm font-bold text-[#1677FF] transition-all hover:bg-[#EEF5FF]"
+                        >
+                          <span>Trainer Sign In</span>
+                        </button>
+                      </div>
+                      <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3 w-3 text-[#1677FF] shrink-0" />
+                        <span>Free profile setup • Verification in 48h • Keep 100% of fees</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Clean Light SaaS Preview */}
+                  <div className="lg:col-span-7">
+                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
+                      {/* Window Header */}
+                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
+                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / trainer / portal</span>
+                        </div>
+                        <span className="flex items-center gap-1 rounded-full bg-[#EEF5FF] px-2.5 py-0.5 text-[10px] font-bold text-[#1677FF] border border-[#D0E2FF]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#1677FF]" /> 4 Direct Briefs
+                        </span>
+                      </div>
+
+                      {/* Interactive Sub-Tabs */}
+                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
+                        {[
+                          { id: 'dashboard', label: 'Lead Hub' },
+                          { id: 'briefs', label: 'Calendar' },
+                          { id: 'analytics', label: 'Earnings' },
+                        ].map((subTab) => (
+                          <button
+                            key={subTab.id}
+                            type="button"
+                            onClick={() => setActivePreviewTab(subTab.id as any)}
+                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                              activePreviewTab === subTab.id
+                                ? 'bg-white text-slate-900 border-t-2 border-[#1677FF] shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                          >
+                            {subTab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Preview Window Content */}
+                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                        {activePreviewTab === 'dashboard' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                              <span className="font-bold text-slate-700">Direct Enterprise Briefs</span>
+                              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700">4 New</span>
+                            </div>
+
+                            <div className="grid gap-2.5">
+                              {[
+                                { title: 'Generative AI for Enterprise Product Teams', client: 'TATA Enterprise L&D', fee: 'Rs 1,10,000 / day', date: 'Sept 22-23 • On-site' },
+                                { title: 'Executive High-Stakes Negotiation Masterclass', client: 'Global Fintech Unicorn', fee: 'Rs 95,000 / day', date: 'Oct 04 • Virtual' },
+                              ].map((lead) => (
+                                <div key={lead.title} className="flex justify-between items-center rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#1677FF] transition-all">
+                                  <div>
+                                    <div className="text-xs font-bold text-slate-900">{lead.title}</div>
+                                    <div className="text-[11px] text-slate-500">{lead.client} • {lead.date}</div>
+                                  </div>
+                                  <div className="text-right shrink-0 ml-3">
+                                    <div className="text-xs font-black text-emerald-600">{lead.fee}</div>
+                                    <button
+                                      type="button"
+                                      onClick={handleTrainerSignUp}
+                                      className="mt-1 rounded-md bg-[#1677FF] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#1562D6] transition"
+                                    >
+                                      Accept Brief
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
+                              <span className="flex items-center gap-1">
+                                <ShieldCheck className="h-3.5 w-3.5 text-blue-500" />
+                                <span>Platform commission: <strong>0% (Keep 100%)</strong></span>
+                              </span>
+                              <span className="text-[#1677FF]">7-Day Direct Payout</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'briefs' && (
+                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
+                            <div className="font-bold text-slate-900">Upcoming Facilitation Calendar</div>
+                            <div className="text-slate-500 text-[11px]">3 Verified Sessions Confirmed for This Month</div>
+                            <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                              <div className="rounded-lg bg-slate-50 p-2 border border-slate-200">
+                                <div className="font-bold text-slate-900">Sept 18-19</div>
+                                <div className="text-slate-500">TATA Cohort • Rs 1.8L</div>
+                              </div>
+                              <div className="rounded-lg bg-slate-50 p-2 border border-slate-200">
+                                <div className="font-bold text-slate-900">Sept 28</div>
+                                <div className="text-slate-500">Fintech Sales • Rs 90k</div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'analytics' && (
+                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-[#1677FF]">100%</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Earnings Kept</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-emerald-600 inline-flex items-center gap-1 justify-center">
+                                <span>4.92</span>
+                                <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                              </div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Avg Trainer Rating</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-purple-600">0%</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Platform Cut</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {activePathRole === 'institution' && (
+                <motion.div
+                  key="institution"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.25 }}
+                  className="grid lg:grid-cols-12 gap-8 items-center rounded-3xl border border-[#DCE8F4] bg-white p-6 sm:p-8 shadow-[0_12px_32px_rgba(124,58,237,0.06)]"
+                >
+                  {/* Left Column: Details & CTAs */}
+                  <div className="lg:col-span-5 space-y-5">
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#DDD6FE] bg-[#F3E8FF] px-3 py-1 text-xs font-black uppercase tracking-wider text-[#6D28D9]">
+                      <GraduationCap className="h-3.5 w-3.5" />
+                      <span>For Colleges &amp; Academies</span>
+                    </div>
+
+                    <div>
+                      <h3 className="atlas-display text-2xl sm:text-3xl font-black text-[#081536] leading-tight">
+                        Industry-Led Masterclasses for Your Students
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-[#5A6680] font-medium">
+                        Bring active tech leaders and CXOs to campus for guest lectures, faculty development, and placement bootcamps.
+                      </p>
+                    </div>
+
+                    <div className="space-y-2.5 border-y border-[#F0F5FA] py-4">
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#7C3AED]" />
+                        <span>Bulk faculty &amp; student cohort training</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#7C3AED]" />
+                        <span>Connect with accredited industry experts</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-[#334155]">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-[#7C3AED]" />
+                        <span>Institutional dashboard &amp; certifications</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleInstitutionSignUp}
+                          className="inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#7C3AED]/20 transition-all hover:bg-[#6D28D9] active:scale-98"
+                        >
+                          <span>Register Institution</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleInstitutionSignIn}
+                          className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED] bg-[#FAF5FF] px-4 py-3 text-xs sm:text-sm font-bold text-[#7C3AED] transition-all hover:bg-[#F3E8FF]"
+                        >
+                          <span>Institution Log In</span>
+                        </button>
+                      </div>
+                      <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
+                        <CheckCircle2 className="h-3 w-3 text-[#7C3AED] shrink-0" />
+                        <span>Bulk cohort pricing • Tailored syllabi • Accredited badges</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Clean Light SaaS Preview */}
+                  <div className="lg:col-span-7">
+                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
+                      {/* Window Header */}
+                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
+                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / campus / cohort-hub</span>
+                        </div>
+                        <span className="flex items-center gap-1 rounded-full bg-[#F3E8FF] px-2.5 py-0.5 text-[10px] font-bold text-[#7C3AED] border border-[#DDD6FE]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#7C3AED]" /> 450 Active Students
+                        </span>
+                      </div>
+
+                      {/* Interactive Sub-Tabs */}
+                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
+                        {[
+                          { id: 'dashboard', label: 'Active Cohorts' },
+                          { id: 'briefs', label: 'Bootcamps' },
+                          { id: 'analytics', label: 'Outcomes' },
+                        ].map((subTab) => (
+                          <button
+                            key={subTab.id}
+                            type="button"
+                            onClick={() => setActivePreviewTab(subTab.id as any)}
+                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                              activePreviewTab === subTab.id
+                                ? 'bg-white text-slate-900 border-t-2 border-[#7C3AED] shadow-xs'
+                                : 'text-slate-500 hover:text-slate-900'
+                            }`}
+                          >
+                            {subTab.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Preview Window Content */}
+                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                        {activePreviewTab === 'dashboard' && (
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                              <span className="font-bold text-slate-700">Ongoing Campus Programs</span>
+                              <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-bold text-purple-700">2 Active</span>
+                            </div>
+
+                            <div className="grid gap-2.5">
+                              {[
+                                { title: 'Industry AI & Machine Learning Bootcamp', students: '120 CS Students', facilitator: 'Lead AI Engineer', status: 'Week 3 of 6' },
+                                { title: 'Placement Readiness & Case Interview Prep', students: '280 Students', facilitator: 'Ex-Deloitte HR Director', status: 'Starts Monday' },
+                              ].map((cohort) => (
+                                <div key={cohort.title} className="flex justify-between items-center rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#7C3AED] transition-all">
+                                  <div>
+                                    <div className="text-xs font-bold text-slate-900">{cohort.title}</div>
+                                    <div className="text-[11px] text-slate-500">{cohort.students} • {cohort.facilitator}</div>
+                                    <span className="inline-block mt-1 rounded bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-[#7C3AED]">
+                                      {cohort.status}
+                                    </span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={handleInstitutionSignUp}
+                                    className="rounded-md bg-[#7C3AED] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#6D28D9] transition"
+                                  >
+                                    Manage
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+
+                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
+                              <span className="flex items-center gap-1">
+                                <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
+                                <span>Campus placement boost: <strong>+40% avg</strong></span>
+                              </span>
+                              <span className="text-[#7C3AED]">Digital Verified Certs</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'briefs' && (
+                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
+                            <div className="font-bold text-slate-900">Upcoming Campus Bootcamps</div>
+                            <p className="text-slate-500 text-[11px] leading-relaxed">
+                              4 turnkey intensive programs ready to deploy with pre-tested syllabi and industry project evaluations.
+                            </p>
+                            <button type="button" onClick={handleInstitutionSignUp} className="w-full rounded-lg bg-[#7C3AED] py-2 text-xs font-bold text-white hover:bg-[#6D28D9]">
+                              Explore Bootcamp Catalog
+                            </button>
+                          </div>
+                        )}
+
+                        {activePreviewTab === 'analytics' && (
+                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-[#7C3AED]">450+</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Students Enrolled</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-emerald-600">94%</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Placement Rate</div>
+                            </div>
+                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
+                              <div className="text-xl font-black text-blue-600">100%</div>
+                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Verifiable Certs</div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* EMBEDDED REGISTRATION FORM DIRECTLY BENEATH PATH SELECTION */}
+          <div id="inline-register-form" className="mt-8 sm:mt-10 mx-auto max-w-4xl">
+            <div className="relative overflow-hidden rounded-[24px] border border-[#DCE8F4] bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(20,45,80,0.07)]">
+              <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,#0E9F88,#1677FF,#7C3AED,transparent)]" />
+
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#1677FF]">
+                    <Sparkles className="h-3 w-3 text-[#1677FF]" /> Instant Registration
+                  </div>
+                  <h3 className="atlas-display mt-1 text-xl sm:text-2xl font-black text-[#091536]">
+                    Create your AtlasCircle account
+                  </h3>
+                  <p className="mt-0.5 text-xs font-semibold text-[#5A6680]">
+                    Select your role below to get started immediately.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleFillDemoReg}
+                  className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-3.5 py-1.5 text-xs font-black text-[#1677FF] transition hover:bg-[#DDF0FF]"
+                >
+                  <Sparkles className="h-3.5 w-3.5 text-[#1677FF]" />
+                  Auto-Fill Demo Data
+                </button>
+              </div>
+
+              {/* 3 ROLE SELECTOR RADIO CARDS MATCHING USER SCREENSHOT */}
+              <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-3" role="radiogroup" aria-label="Account type">
+                {[
+                  { id: 'corporate' as const, label: "I'm hiring trainers", detail: 'For L&D teams', icon: Building2, activeColor: 'border-[#23C99A] bg-[linear-gradient(135deg,#F0FCF8,#F7FFFC)] text-[#0E9F88]' },
+                  { id: 'trainer' as const, label: "I'm a trainer", detail: 'For facilitators', icon: UsersRound, activeColor: 'border-[#1677FF] bg-[linear-gradient(135deg,#EEF5FF,#F5F9FF)] text-[#1677FF]' },
+                  { id: 'institution' as const, label: "Colleges & Academies", detail: 'For campuses', icon: GraduationCap, activeColor: 'border-[#7C3AED] bg-[linear-gradient(135deg,#F3E8FF,#FAF5FF)] text-[#7C3AED]' },
+                ].map((roleCard) => {
+                  const selected = regRole === roleCard.id;
+                  const IconComp = roleCard.icon;
+                  return (
+                    <button
+                      key={roleCard.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => {
+                        setRegRole(roleCard.id);
+                        setActivePathRole(roleCard.id);
+                      }}
+                      className={`atlas-focus group relative rounded-xl border p-3.5 text-left transition ${
+                        selected
+                          ? `${roleCard.activeColor} shadow-[0_8px_22px_rgba(20,45,80,0.08)]`
+                          : 'border-[#D9E3ED] bg-[#FBFDFF] text-[#475569] hover:border-[#AFC5D9] hover:bg-white'
+                      }`}
+                    >
+                      {selected && (
+                        <span className="absolute right-3 top-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#23C99A] text-white">
+                          <Check className="h-3 w-3 stroke-[3]" />
+                        </span>
+                      )}
+                      <span className={`flex h-8 w-8 items-center justify-center rounded-lg ${selected ? 'bg-white shadow-xs' : 'bg-slate-100 text-slate-500'}`}>
+                        <IconComp className="h-4 w-4" />
+                      </span>
+                      <span className="mt-2 block text-xs font-black text-[#172343]">{roleCard.label}</span>
+                      <span className="mt-0.5 block text-[10px] font-semibold text-[#7B879B]">{roleCard.detail}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* REGISTRATION FORM INPUTS */}
+              <form onSubmit={handleRegSubmit} className="space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">Full Name</label>
+                    <div className="relative">
+                      <UserRound className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
+                      <input
+                        type="text"
+                        placeholder="Jane Smith"
+                        value={regName}
+                        onChange={(e) => setRegName(e.target.value)}
+                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+                      />
+                    </div>
+                    {regErrors.name && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.name}</p>}
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">Work Email</label>
+                    <div className="relative">
+                      <Mail className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
+                      <input
+                        type="email"
+                        placeholder="name@company.com"
+                        value={regEmail}
+                        onChange={(e) => setRegEmail(e.target.value)}
+                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+                      />
+                    </div>
+                    {regErrors.email && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.email}</p>}
+                  </div>
+
+                  {(regRole === 'corporate' || regRole === 'institution') && (
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+                        {regRole === 'institution' ? 'Institution / Campus Name' : 'Organization Name'}
+                      </label>
+                      <div className="relative">
+                        {regRole === 'institution' ? <GraduationCap className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" /> : <Building2 className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />}
+                        <input
+                          type="text"
+                          placeholder={regRole === 'institution' ? 'National Institute of Technology' : 'Acme Corporation'}
+                          value={regOrg}
+                          onChange={(e) => setRegOrg(e.target.value)}
+                          className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+                        />
+                      </div>
+                      {regErrors.org && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.org}</p>}
+                    </div>
+                  )}
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">Password</label>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
+                      <input
+                        type="password"
+                        placeholder="At least 8 characters"
+                        value={regPassword}
+                        onChange={(e) => setRegPassword(e.target.value)}
+                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+                      />
+                    </div>
+                    {regErrors.password && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.password}</p>}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="flex cursor-pointer items-start gap-2.5 text-xs font-semibold text-[#5A6680]">
+                    <input
+                      type="checkbox"
+                      checked={regTerms}
+                      onChange={(e) => setRegTerms(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#CBD5E1] accent-[#1677FF]"
+                    />
+                    <span>I agree to the <button type="button" className="font-bold text-[#1677FF]">Terms of Service</button> and <button type="button" className="font-bold text-[#1677FF]">Privacy Policy</button>.</span>
+                  </label>
+                  {regErrors.terms && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.terms}</p>}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={regIsSubmitting}
+                  className="atlas-focus group flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#31E6B1] text-sm font-black text-[#071B2F] shadow-[0_12px_28px_rgba(49,230,177,0.24)] transition hover:-translate-y-0.5 hover:bg-[#55EFC1] disabled:opacity-70"
+                >
+                  {regIsSubmitting ? 'Creating account...' : <>Create Account <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></>}
+                </button>
+              </form>
+            </div>
+          </div>
+
 
           {/* TRUSTED BY LEADING ORGANIZATIONS (Original Brand Logos) */}
           <div className="mt-24 text-center">
@@ -698,8 +1410,13 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
           <div className="grid gap-8 border-b border-white/12 pb-10 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#18BFA5] text-sm font-black text-white">A</span>
-                <span className="text-sm font-black uppercase text-[#7EE7D0]">Corporate learning, simplified</span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-sm">
+                  <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="atlas-display text-base font-black tracking-tight text-white leading-none">AtlasCircle</span>
+                  <span className="text-[10px] font-bold text-[#7EE7D0] tracking-tight mt-0.5">Corporate learning, simplified</span>
+                </div>
               </div>
               <h2 className="mt-6 max-w-2xl text-[24px] font-extrabold leading-tight sm:text-[32px]">
                 Build stronger teams with the right experts.
@@ -721,8 +1438,8 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
             transition={{ duration: 0.7, ease: 'easeOut' }}
             className="overflow-hidden border-b border-white/12 py-10 text-center"
           >
-            <div className="atlas-display text-[76px] font-black leading-[0.78] text-white sm:text-[128px] lg:text-[180px]">
-              ATLAS
+            <div className="atlas-display text-[48px] font-black leading-[0.85] tracking-tight text-white sm:text-[88px] lg:text-[130px]">
+              ATLASCIRCLE
             </div>
           </motion.div>
 
@@ -730,19 +1447,19 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
             {/* Brand Intro & Socials */}
             <div className="lg:col-span-2 space-y-4">
               <p className="max-w-sm text-xs font-medium leading-relaxed text-[#AAB7D0]">
-                A curated marketplace of expert trainers empowering organizations and professionals to learn, share and grow.
+                A curated marketplace of expert corporate trainers and facilitators empowering organizations to learn, share and grow.
               </p>
               <div className="flex items-center gap-2.5 pt-2">
-                <a href="#linkedin" aria-label="LinkedIn" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
                   <Linkedin className="h-3.5 w-3.5" />
                 </a>
-                <a href="#twitter" aria-label="Twitter" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
+                <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
                   <Twitter className="h-3.5 w-3.5" />
                 </a>
-                <a href="#facebook" aria-label="Facebook" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
+                <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
                   <Facebook className="h-3.5 w-3.5" />
                 </a>
-                <a href="#website" aria-label="Website" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
+                <a href="/" aria-label="Website" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
                   <Globe className="h-3.5 w-3.5" />
                 </a>
               </div>
@@ -752,47 +1469,104 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
             <div>
               <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">For Corporates</div>
               <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <a href="#how-it-works" className="transition-colors hover:text-[#31E6B1]">How It Works</a>
-                <button onClick={handleCorporateSignUp} className="transition-colors hover:text-[#31E6B1]">Post a Requirement</button>
                 <button onClick={() => router.push('/experts')} className="transition-colors hover:text-[#31E6B1]">Find Trainers</button>
-                <a href="#pricing" className="transition-colors hover:text-[#31E6B1]">Pricing</a>
-                <a href="#resources" className="transition-colors hover:text-[#31E6B1]">Resources</a>
+                <button onClick={handleCorporateSignUp} className="transition-colors hover:text-[#31E6B1]">Post a Training Brief</button>
+                <button onClick={() => router.push('/requirements')} className="transition-colors hover:text-[#31E6B1]">My Requirements</button>
+                <button onClick={() => router.push('/engagements')} className="transition-colors hover:text-[#31E6B1]">Workshops &amp; Engagements</button>
               </div>
             </div>
 
             <div>
               <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">For Trainers</div>
               <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <a href="#why-join" className="transition-colors hover:text-[#31E6B1]">Why Join Atlas</a>
-                <button onClick={handleTrainerSignUp} className="transition-colors hover:text-[#31E6B1]">Create Profile</button>
-                <a href="#opportunities" className="transition-colors hover:text-[#31E6B1]">Find Opportunities</a>
-                <a href="#trainer-resources" className="transition-colors hover:text-[#31E6B1]">Resources</a>
-                <a href="#guidelines" className="transition-colors hover:text-[#31E6B1]">Trainer Guidelines</a>
+                <button onClick={handleTrainerSignUp} className="transition-colors hover:text-[#31E6B1]">Join as Verified Trainer</button>
+                <button onClick={() => router.push('/trainer-portal')} className="transition-colors hover:text-[#31E6B1]">Trainer Portal</button>
+                <button onClick={() => router.push('/trainer-registration')} className="transition-colors hover:text-[#31E6B1]">Trainer Verification</button>
+                <button onClick={() => router.push('/login')} className="transition-colors hover:text-[#31E6B1]">Account Sign In</button>
               </div>
             </div>
 
             <div>
-              <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">Company &amp; Support</div>
+              <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">Platform &amp; Tools</div>
               <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <a href="#about-us" className="transition-colors hover:text-[#31E6B1]">About Us</a>
-                <a href="#careers" className="transition-colors hover:text-[#31E6B1]">Careers</a>
-                <a href="#help" className="transition-colors hover:text-[#31E6B1]">Help Center</a>
-                <a href="#terms" className="transition-colors hover:text-[#31E6B1]">Terms of Use</a>
-                <a href="#privacy" className="transition-colors hover:text-[#31E6B1]">Privacy Policy</a>
+                <button onClick={() => router.push('/shortlist')} className="transition-colors hover:text-[#31E6B1]">Shortlist &amp; Bookings</button>
+                <button onClick={() => router.push('/reports')} className="transition-colors hover:text-[#31E6B1]">Reports &amp; Analytics</button>
+                <button onClick={() => router.push('/settings')} className="transition-colors hover:text-[#31E6B1]">Account Settings</button>
+                <button onClick={() => router.push('/')} className="transition-colors hover:text-[#31E6B1]">Home Overview</button>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-4 border-t border-white/12 pt-6 text-[11px] font-medium text-[#8290AA] sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; 2026 Project Atlas. Corporate Trainer &amp; Facilitator Platform. All rights reserved.</p>
+            <p>&copy; 2026 AtlasCircle. Corporate Trainer &amp; Facilitator Platform. All rights reserved.</p>
             <div className="flex flex-wrap gap-5">
-              <a href="#terms" className="transition-colors hover:text-white">Terms</a>
-              <a href="#privacy" className="transition-colors hover:text-white">Privacy</a>
-              <a href="#security" className="transition-colors hover:text-white">Security</a>
+              <button onClick={() => router.push('/terms')} className="transition-colors hover:text-white">Terms</button>
+              <button onClick={() => router.push('/privacy')} className="transition-colors hover:text-white">Privacy</button>
+              <button onClick={() => router.push('/settings')} className="transition-colors hover:text-white">Settings</button>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* EMAIL VERIFICATION MODAL FOR EMBEDDED FORM */}
+      {showRegModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#07132F]/60 p-4 backdrop-blur-md">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[24px] border border-white bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF5FF] text-[#1677FF] mb-4">
+              <Mail className="h-6 w-6 stroke-[2]" />
+            </div>
+
+            <h3 className="atlas-display text-xl font-black text-[#091536]">Verify Your Email Address</h3>
+            <p className="mt-1 text-xs font-medium text-[#5A6680]">
+              We have sent a verification code to <span className="font-bold text-[#091536]">{regEmail}</span>. Please verify to complete your sign up.
+            </p>
+
+            <div className="my-4 rounded-xl bg-[#F4F8FC] p-3 border border-[#DCE8F4] text-xs font-medium text-[#334155]">
+              <span className="font-bold text-[#1677FF]">Demo Verification OTP:</span> Enter code <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-[#CBD5E1]">1234</span> or click Auto-Verify below.
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-[11px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                  4-Digit Verification Code
+                </label>
+                <input
+                  type="text"
+                  maxLength={4}
+                  value={regOtpCode}
+                  onChange={(e) => setRegOtpCode(e.target.value)}
+                  placeholder="1234"
+                  className="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-2.5 text-center font-mono text-lg font-bold tracking-widest text-[#091536] focus:border-[#1677FF] focus:outline-none"
+                />
+              </div>
+
+              {regOtpError && (
+                <p className="text-xs font-semibold text-[#C62E40]">{regOtpError}</p>
+              )}
+
+              <div className="flex flex-col gap-2 pt-2 sm:flex-row">
+                <button
+                  type="button"
+                  disabled={regIsVerifying}
+                  onClick={() => handleConfirmRegVerification('AUTO_VERIFY')}
+                  className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#31E6B1] px-4 py-3 text-xs font-black text-[#071B2F] shadow-md transition hover:bg-[#55EFC1]"
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Auto-Verify &amp; Proceed
+                </button>
+                <button
+                  type="button"
+                  disabled={regIsVerifying}
+                  onClick={() => handleConfirmRegVerification()}
+                  className="inline-flex items-center justify-center rounded-xl bg-[#1677FF] px-4 py-3 text-xs font-bold text-white transition hover:bg-[#1562D6]"
+                >
+                  Verify Code
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -12,7 +12,7 @@ export default function TrainerRegistrationPage() {
     <TrainerRegistrationWizard
       onComplete={(trainerData) => {
         // Stored into local storage and redirect to portal
-        router.push('/trainer-portal');
+        router.push('/thankyou?type=trainer');
       }}
       onCancel={() => router.push('/')}
     />

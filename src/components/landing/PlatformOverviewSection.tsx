@@ -83,9 +83,8 @@ export function PlatformOverviewSection({ onExploreExperts }: PlatformOverviewSe
           <div className="min-h-[500px] overflow-hidden rounded-[22px] border border-[#DCE7F3] bg-white shadow-[0_20px_55px_rgba(42,92,132,0.09)]">
             <div className="grid min-h-[500px] lg:grid-cols-[158px_1fr]">
               <aside className="hidden border-r border-[#E5ECF4] bg-[#FCFDFF] p-4 lg:block">
-                <div className="mb-6 flex items-center gap-2 px-2 pt-1">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-[9px] bg-[#18BFA5] text-sm font-black text-white">A</span>
-                  <span className="text-xl font-black text-[#091536]">Atlas</span>
+                <div className="mb-6 flex items-center px-2 pt-1">
+                  <img src="/logo/atlas-logo.webp" alt="AtlasCircle" className="h-8 w-auto object-contain" />
                 </div>
 
                 <nav className="space-y-1.5" aria-label="Platform dashboard preview">
