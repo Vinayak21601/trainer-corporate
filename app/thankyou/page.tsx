@@ -111,16 +111,32 @@ function ThankYouContent() {
           </p>
         </div>
 
-        {/* Action Button - Return to Homepage Only */}
-        <div className="flex items-center justify-center pt-2">
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          {type === 'corporate' && (
+            <button
+              type="button"
+              onClick={() => router.push('/create-requirement')}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98"
+            >
+              <FileCheck className="h-4 w-4" />
+              <span>Create Requirement</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => router.push('/')}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1677FF] px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-[#1677FF]/20 transition hover:bg-[#1562D6] active:scale-98"
+            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl ${
+              type === 'corporate'
+                ? 'bg-[#EEF5FF] text-[#1677FF] border border-[#D0E2FF] hover:bg-[#E2EEFF]'
+                : 'bg-[#1677FF] text-white shadow-md shadow-[#1677FF]/20 hover:bg-[#1562D6]'
+            } px-7 py-3.5 text-xs sm:text-sm font-black transition active:scale-98`}
           >
             <Home className="h-4 w-4" />
             <span>Return to Homepage</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            {type !== 'corporate' && <ArrowRight className="h-3.5 w-3.5" />}
           </button>
         </div>
 
@@ -136,14 +152,8 @@ export default function ThankYouPage() {
 
       {/* Top Header Bar */}
       <header className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-4 py-6 sm:px-6">
-        <Link href="/" className="atlas-focus flex items-center gap-2.5 rounded-xl group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 border border-[#E1E9F2]">
-            <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain mix-blend-multiply" />
-          </div>
-          <div className="flex flex-col">
-            <span className="atlas-display text-xl font-black tracking-tight text-[#081536] leading-none">AtlasCircle</span>
-            <span className="text-[9px] font-bold text-[#5A6680] tracking-tight mt-0.5">Expertise Meets Opportunity</span>
-          </div>
+        <Link href="/" className="atlas-focus flex items-center rounded-xl group transition-transform duration-300 hover:scale-105">
+          <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-16 w-auto object-contain" />
         </Link>
       </header>
 

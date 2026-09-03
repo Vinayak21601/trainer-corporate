@@ -256,14 +256,8 @@ export default function OrgInstituteRegistrationForm() {
 
       {/* Top Header Bar */}
       <header className="relative z-10 mx-auto flex max-w-5xl items-center justify-between px-4 py-6 sm:px-6">
-        <Link href="/" className="atlas-focus flex items-center gap-2.5 rounded-xl group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 border border-[#E1E9F2]">
-            <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain mix-blend-multiply" />
-          </div>
-          <div className="flex flex-col">
-            <span className="atlas-display text-xl font-black tracking-tight text-[#081536] leading-none">AtlasCircle</span>
-            <span className="text-[9px] font-bold text-[#5A6680] tracking-tight mt-0.5">Institution &amp; Agency Portal</span>
-          </div>
+        <Link href="/" className="atlas-focus flex items-center rounded-xl group transition-transform duration-300 hover:scale-105">
+          <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-16 w-auto object-contain" />
         </Link>
 
         <button

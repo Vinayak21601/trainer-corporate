@@ -59,28 +59,17 @@ export function LandingHeader({ persona, onExploreExperts, onCreateRequirement }
         className="sticky top-0 z-40 w-full bg-transparent px-3 py-3 sm:px-6 sm:py-4 lg:px-8"
       >
         <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-full border border-[#DCE8F4] bg-white/82 px-3 py-2.5 shadow-[0_16px_44px_rgba(34,67,93,0.10)] backdrop-blur-2xl sm:gap-4 sm:px-5 sm:py-3" style={{ WebkitBackdropFilter: 'blur(24px) saturate(180%)' }}>
-          {/* Logo */}
           <button
             type="button"
             aria-label="Go to AtlasCircle home"
-            className="atlas-focus group flex shrink-0 items-center gap-2.5 rounded-xl text-left"
+            className="atlas-focus group flex shrink-0 items-center text-left transition-transform duration-300 hover:scale-105"
             onClick={() => router.push('/')}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6F8F5] to-[#EEF5FF] p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
-              <img
-                src="/logo/atlas-icon.png"
-                alt="AtlasCircle Icon"
-                className="h-full w-full object-contain mix-blend-multiply"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="atlas-display text-base font-black tracking-tight text-[#081536] sm:text-lg leading-none">
-                AtlasCircle
-              </span>
-              <span className="text-[9px] font-bold text-[#5B6B84] tracking-tight mt-0.5">
-                Expertise Meets Opportunity
-              </span>
-            </div>
+            <img
+              src="/logo/atlas-logo.webp"
+              alt="AtlasCircle Logo"
+              className="h-12 sm:h-16 w-auto object-contain"
+            />
           </button>
 
           {/* Nav Links */}

@@ -25,14 +25,8 @@ export function AuthLayout({ children, mode }: AuthLayoutProps) {
       <main className="relative mx-auto grid min-h-screen max-w-[1440px] lg:my-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(540px,1.15fr)]">
         <section className="relative hidden overflow-hidden px-10 py-8 lg:flex lg:flex-col xl:px-14 xl:py-9">
           <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-[linear-gradient(transparent,#CFE2F4_20%,#CFE2F4_80%,transparent)]" />
-          <Link href="/" className="atlas-focus relative z-10 flex w-fit items-center gap-2.5 rounded-xl group">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6F8F5] to-[#EEF5FF] p-1 shadow-xs transition-transform duration-300 group-hover:scale-105">
-              <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain mix-blend-multiply" />
-            </div>
-            <div className="flex flex-col">
-              <span className="atlas-display text-xl font-black tracking-tight text-[#081536] leading-none">AtlasCircle</span>
-              <span className="text-[9px] font-bold text-[#5A6680] tracking-tight mt-0.5">Expertise Meets Opportunity</span>
-            </div>
+          <Link href="/" className="atlas-focus relative z-10 flex w-fit items-center rounded-xl group transition-transform duration-300 hover:scale-105">
+            <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-16 w-auto object-contain" />
           </Link>
 
           <motion.div
@@ -93,11 +87,8 @@ export function AuthLayout({ children, mode }: AuthLayoutProps) {
         </section>
 
         <section className="relative flex min-h-screen items-center justify-center bg-white/18 px-4 py-8 sm:px-8 lg:px-10 lg:py-6">
-          <Link href="/" className="atlas-focus absolute left-5 top-5 flex items-center gap-2 rounded-lg lg:hidden group">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6F8F5] to-[#EEF5FF] p-1 shadow-xs">
-              <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain mix-blend-multiply" />
-            </div>
-            <span className="atlas-display text-lg font-black tracking-tight text-[#081536]">AtlasCircle</span>
+          <Link href="/" className="atlas-focus absolute left-5 top-5 flex items-center rounded-lg lg:hidden group">
+            <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-8 w-auto object-contain" />
           </Link>
           <motion.div
             initial={{ opacity: 0, y: 18, scale: 0.99 }}

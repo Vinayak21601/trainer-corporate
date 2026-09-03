@@ -55,7 +55,6 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
 }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const [activePathRole, setActivePathRole] = useState<'corporate' | 'trainer' | 'institution'>('corporate');
   const [activePreviewTab, setActivePreviewTab] = useState<'dashboard' | 'matches' | 'briefs' | 'analytics'>('dashboard');
@@ -196,10 +195,6 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
     scrollToRegisterForm();
   };
 
-  const navItems = [
-    { id: 'choose-path', label: 'Get Started', action: () => document.getElementById('choose-path')?.scrollIntoView({ behavior: 'smooth' }) },
-  ];
-
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-white font-sans text-[#111111] antialiased selection:bg-[#1677FF] selection:text-white">
       {/* ORIGINAL HERO BACKDROP ATMOSPHERE */}
@@ -207,119 +202,47 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
         <HeroBackdrop />
       </div>
 
-      {/* FLOATING GLASS NAVBAR */}
-      <motion.div
-        initial={{ y: -16, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="sticky top-0 z-40 w-full bg-transparent px-3 py-3 sm:px-6 sm:py-4 lg:px-8"
-      >
-        <div className="relative z-10 mx-auto flex max-w-7xl items-center justify-between gap-2 rounded-full border border-[#DCE8F4] bg-white/85 px-3 py-2.5 shadow-[0_16px_44px_rgba(34,67,93,0.10)] backdrop-blur-2xl sm:gap-4 sm:px-5 sm:py-3" style={{ WebkitBackdropFilter: 'blur(24px) saturate(180%)' }}>
-          {/* Logo */}
+      {/* TOP HEADER ATTACHED TO PAGE */}
+      <header className="relative z-40 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex items-center justify-between">
+        {/* Left Logo */}
+        <button
+          type="button"
+          aria-label="Go to AtlasCircle home"
+          className="atlas-focus group flex shrink-0 items-center text-left transition-transform duration-300 hover:scale-105"
+          onClick={() => router.push('/')}
+        >
+          <img
+            src="/logo/atlas-logo.png"
+            alt="AtlasCircle Logo"
+            className="h-28 w-auto object-contain"
+          />
+        </button>
+
+        {/* Right Action Buttons */}
+        <div className="flex items-center gap-3">
           <button
             type="button"
-            aria-label="Go to AtlasCircle home"
-            className="atlas-focus group flex shrink-0 items-center gap-2.5 rounded-xl text-left"
-            onClick={() => router.push('/')}
+            onClick={() => router.push('/login')}
+            className="atlas-focus rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-[#526179] transition hover:bg-[#EEF7FF] hover:text-[#176BFF]"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#E6F8F5] to-[#EEF5FF] p-1 shadow-xs transition-transform duration-300 group-hover:scale-105 sm:h-10 sm:w-10">
-              <img
-                src="/logo/atlas-icon.png"
-                alt="AtlasCircle Icon"
-                className="h-full w-full object-contain mix-blend-multiply"
-              />
-            </div>
-            <div className="flex flex-col">
-              <span className="atlas-display text-base font-black tracking-tight text-[#081536] sm:text-lg leading-none">
-                AtlasCircle
-              </span>
-              <span className="text-[9px] font-bold text-[#5B6B84] tracking-tight mt-0.5">
-                Expertise Meets Opportunity
-              </span>
-            </div>
+            Sign in
           </button>
-
-          {/* Nav Links */}
-          <div className="hidden items-center gap-1 rounded-full bg-white/65 p-1 text-[13px] font-semibold text-[#4D5B73] md:flex">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={item.action}
-                className="rounded-full px-3 py-2 transition-all hover:bg-[#EEF7FF] hover:text-[#1677FF]"
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Action CTAs */}
-          <div className="flex items-center gap-2">
-            <button onClick={scrollToRegisterForm} className="atlas-focus hidden rounded-lg px-3 py-2 text-xs font-black text-[#526179] transition hover:bg-[#EEF7FF] hover:text-[#176BFF] sm:inline-flex">
-              Sign in
-            </button>
-            <LandingButton onClick={scrollToRegisterForm} size="sm" variant="secondary" className="hidden md:inline-flex">
-              Login
-            </LandingButton>
-            <button
-              type="button"
-              aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="atlas-focus flex h-10 w-10 items-center justify-center rounded-full bg-[#EEF7FF] text-[#17365D] transition hover:bg-[#DFF0FF] hover:text-[#176BFF] md:hidden"
-            >
-              {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-            </button>
-          </div>
-
-          {/* Mobile Drawer */}
-          <AnimatePresence>
-            {isMobileMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -6, scale: 0.98 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="absolute left-0 right-0 top-[calc(100%+10px)] overflow-hidden rounded-[20px] border border-[#DCE8F4] bg-white/96 p-3 shadow-[0_22px_55px_rgba(34,67,93,0.16)] backdrop-blur-2xl md:hidden"
-              >
-                <nav className="grid gap-1">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        item.action();
-                      }}
-                      className="atlas-focus flex items-center justify-between rounded-xl px-3 py-2.5 text-xs font-black text-[#34445D] transition hover:bg-[#EEF7FF] hover:text-[#1677FF]"
-                    >
-                      {item.label}<ArrowRight className="h-3.5 w-3.5" />
-                    </button>
-                  ))}
-                </nav>
-
-                <div className="my-2 h-px bg-[#E7EEF5]" />
-                <div className="grid gap-2">
-                  <button onClick={() => { setIsMobileMenuOpen(false); scrollToRegisterForm(); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
-                    <LogIn className="h-4 w-4 text-[#176BFF]" />Sign in
-                  </button>
-                  <button onClick={() => { setIsMobileMenuOpen(false); handleTrainerSignUp(); }} className="atlas-focus flex items-center gap-2 rounded-xl px-3 py-2.5 text-left text-xs font-black text-[#526179] transition hover:bg-[#F3F7FB]">
-                    <UserPlus className="h-4 w-4 text-[#11BFA5]" />Join as Trainer
-                  </button>
-                  <button onClick={() => { setIsMobileMenuOpen(false); handleCorporateSignUp(); }} className="atlas-focus flex items-center gap-2 rounded-xl bg-[#0D3270] px-3 py-2.5 text-left text-xs font-black text-white transition hover:bg-[#176BFF]">
-                    <FileText className="h-4 w-4" />Post a Training Brief
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <LandingButton
+            type="button"
+            onClick={() => router.push('/login')}
+            size="sm"
+            variant="secondary"
+          >
+            Login
+          </LandingButton>
         </div>
-      </motion.div>
+      </header>
 
-      {/* HERO SECTION */}
-      <section id="hero-search" className="relative space-y-8 pt-4 sm:pt-7 lg:pt-9">
+      {/* HERO / SEARCH & STATS SECTION */}
+      <section id="hero-search" className="relative space-y-8 pb-2 sm:pt-4 lg:pt-4">
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 sm:gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-            {/* Left Hero Column */}
+            {/* Left Hero Column */}  
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
@@ -332,9 +255,20 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
 
               <h1 className="atlas-display text-[32px] font-extrabold leading-[1.12] text-[#081536] min-[380px]:text-[34px] sm:text-[42px] lg:text-[46px] xl:text-[50px]">
                 Expert Trainers.{' '}
-                <span className="box-decoration-clone rounded-xl bg-[#95F2D8] px-2 py-0.5 text-[#082733] sm:inline-block sm:rounded-full sm:px-4 sm:py-1 sm:whitespace-nowrap">
-                  Stronger Teams.
-                </span>{' '}
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.92, y: 6 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ duration: 0.55, ease: 'easeOut', delay: 0.2 }}
+                  className="relative inline-block rounded-full bg-[#95F2D8] -ml-2.5 px-3 py-0 sm:-ml-3.5 sm:px-4 sm:py-0.5 text-[#082733] whitespace-nowrap overflow-hidden align-baseline shadow-[0_4px_20px_rgba(149,242,216,0.45)]"
+                >
+                  {/* Light sweep shimmer effect */}
+                  <motion.span
+                    animate={{ x: ['-100%', '200%'] }}
+                    transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 2.2, ease: 'easeInOut' }}
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -skew-x-12"
+                  />
+                  <span className="relative z-10">Stronger Teams.</span>
+                </motion.span>{' '}
                 Greater Impact.
               </h1>
 
@@ -342,7 +276,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                 AtlasCircle is where organizations and professionals come together to learn, share and grow.
               </p>
 
-              {/* SEARCH BOX COMPONENT (Original UI Glass styling) */}
+              {/* SEARCH BOX COMPONENT */}
               <div className="pt-2">
                 <form onSubmit={handleSearchSubmit} className="relative flex w-full max-w-xl items-center">
                   <div className="relative flex w-full items-center rounded-full border border-[#DCE8F4] bg-white/95 p-2 shadow-[0_18px_50px_rgba(34,67,93,0.12)] backdrop-blur-xl transition-all hover:shadow-[0_22px_60px_rgba(34,67,93,0.16)]">
@@ -369,7 +303,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
               </div>
             </motion.div>
 
-            {/* Right Hero Stats Badges (Original UI design) */}
+            {/* Right Hero Stats Badges */}
             <div className="relative mx-auto grid w-full max-w-[520px] grid-cols-3 overflow-hidden rounded-[18px] border border-[#E1E9F2] bg-white/90 p-2 shadow-[0_14px_34px_rgba(28,57,96,0.10)] sm:block sm:min-h-[390px] sm:overflow-visible sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none lg:min-h-[455px]">
               <div className="absolute inset-x-8 bottom-8 top-10 hidden rounded-[40px] bg-[radial-gradient(circle_at_50%_44%,rgba(255,255,255,0.76),rgba(232,248,255,0.24)_45%,transparent_70%)] sm:block" />
 
@@ -515,7 +449,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
       </section>
 
       {/* JOIN ATLASCIRCLE TODAY TABBED ROLE SECTION */}
-      <section id="choose-path" className="relative py-14 sm:py-20 lg:py-24 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
+      <section id="choose-path" className="relative pt-8 pb-14 sm:pt-8 sm:pb-20 lg:pt-10 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#FBFAF7] via-[#F4F8FC] to-[#EEF5FF]">
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="JOIN ATLASCIRCLE TODAY"
@@ -1410,16 +1344,12 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
           <div className="grid gap-8 border-b border-white/12 pb-10 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-sm">
-                  <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="atlas-display text-base font-black tracking-tight text-white leading-none">AtlasCircle</span>
-                  <span className="text-[10px] font-bold text-[#7EE7D0] tracking-tight mt-0.5">Corporate learning, simplified</span>
+                <div className="flex items-center rounded-2xl bg-white p-3.5 shadow-md">
+                  <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
                 </div>
               </div>
               <h2 className="mt-6 max-w-2xl text-[24px] font-extrabold leading-tight sm:text-[32px]">
-                Build stronger teams with the right experts.
+                EXPERTISE MEETS OPPORTUNITY
               </h2>
             </div>
             <LandingButton
@@ -1431,6 +1361,8 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
             </LandingButton>
           </div>
 
+          {/* BIG ATLASCIRCLE TEXT BANNER COMMENTED OUT */}
+          {/*
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1442,6 +1374,7 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
               ATLASCIRCLE
             </div>
           </motion.div>
+          */}
 
           <div className="grid gap-8 py-9 md:grid-cols-2 lg:grid-cols-5">
             {/* Brand Intro & Socials */}

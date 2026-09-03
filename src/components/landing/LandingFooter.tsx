@@ -27,12 +27,8 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
           <div className="grid gap-8 border-b border-white/12 pb-10 md:grid-cols-[1fr_auto] md:items-end">
             <div>
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white p-1 shadow-sm">
-                  <img src="/logo/atlas-icon.png" alt="AtlasCircle" className="h-full w-full object-contain" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="atlas-display text-base font-black tracking-tight text-white leading-none">AtlasCircle</span>
-                  <span className="text-[10px] font-bold text-[#7EE7D0] tracking-tight mt-0.5">{trainerExperience ? 'Your training career, elevated' : 'Corporate learning, simplified'}</span>
+                <div className="flex items-center rounded-2xl bg-white p-3.5 shadow-md">
+                  <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
                 </div>
               </div>
               <h2 className="mt-6 max-w-2xl text-[24px] font-extrabold leading-tight sm:text-[32px]">
@@ -48,6 +44,8 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
             </LandingButton>
           </div>
 
+          {/* BIG ATLASCIRCLE TEXT BANNER COMMENTED OUT */}
+          {/*
           <motion.div
             initial={{ opacity: 0, y: 28 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -59,6 +57,7 @@ export function LandingFooter({ persona = 'corporate', onExploreExperts, onCreat
               ATLASCIRCLE
             </div>
           </motion.div>
+          */}
 
           <div className="grid gap-8 py-9 md:grid-cols-[1.4fr_1fr_1fr]">
             <p className="max-w-md text-sm font-medium leading-6 text-[#AAB7D0]">
