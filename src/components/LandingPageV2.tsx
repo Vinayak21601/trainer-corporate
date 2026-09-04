@@ -30,7 +30,9 @@ import {
   Mail,
   LockKeyhole,
   Check,
-  UsersRound
+  UsersRound,
+  Calendar,
+  DollarSign
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trainer } from '../types';
@@ -78,6 +80,19 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
   const scrollToRegisterForm = () => {
     const el = document.getElementById('inline-register-form');
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const scrollToPlatformPreview = () => {
+    const el = document.getElementById('platform-preview');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  const [previewToast, setPreviewToast] = useState<string | null>(null);
+
+  const handlePreviewAction = (message: string) => {
+    setPreviewToast(message);
+    setTimeout(() => setPreviewToast(null), 4000);
+    scrollToRegisterForm();
   };
 
   const handleFillDemoReg = () => {
@@ -184,10 +199,861 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
     scrollToRegisterForm();
   };
 
-  const handleInstitutionSignIn = () => {
-    setActivePathRole('institution');
-    scrollToRegisterForm();
-  };
+  const renderRegisterForm = () => (
+    <div id="inline-register-form" className="relative overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white p-5 sm:p-7 shadow-[0_12px_32px_rgba(20,45,80,0.06)]">
+      <div className="absolute inset-x-8 top-0 h-px bg-[linear-gradient(90deg,transparent,#0E9F88,#1677FF,#7C3AED,transparent)]" />
+
+      <div className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-slate-100 pb-3.5">
+        <div>
+          <div
+            className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] ${
+              activePathRole === 'corporate'
+                ? 'text-[#0E9F88]'
+                : activePathRole === 'trainer'
+                ? 'text-[#1677FF]'
+                : 'text-[#7C3AED]'
+            }`}
+          >
+            <Sparkles className="h-3 w-3" />
+            {activePathRole === 'corporate' && 'Corporate Registration'}
+            {activePathRole === 'trainer' && 'Trainer Registration'}
+            {activePathRole === 'institution' && 'Institution Registration'}
+          </div>
+          <h4 className="atlas-display mt-0.5 text-lg sm:text-xl font-black text-[#091536]">
+            Create your AtlasCircle account
+          </h4>
+          <p className="text-[11px] font-medium text-[#5A6680] mt-0.5">
+            {activePathRole === 'corporate' && 'Sign up as an organization to source and hire verified corporate trainers.'}
+            {activePathRole === 'trainer' && 'Sign up as an expert trainer to receive high-paying corporate briefs directly.'}
+            {activePathRole === 'institution' && 'Sign up as an institution to bring industry masterclasses to students.'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleFillDemoReg}
+          className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-3 py-1 text-[11px] font-black text-[#1677FF] transition hover:bg-[#DDF0FF]"
+        >
+          <Sparkles className="h-3 w-3 text-[#1677FF]" />
+          Demo Data
+        </button>
+      </div>
+
+      <form onSubmit={handleRegSubmit} className="space-y-3.5">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div>
+            <label className="block text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+              Full Name
+            </label>
+            <div className="relative">
+              <UserRound className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#94A3B8]" />
+              <input
+                type="text"
+                placeholder={
+                  activePathRole === 'trainer'
+                    ? 'Vikram Malhotra'
+                    : activePathRole === 'institution'
+                    ? 'Dr. Ramesh Rao'
+                    : 'Sarah Jenkins'
+                }
+                value={regName}
+                onChange={(e) => setRegName(e.target.value)}
+                className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-9 pr-3 py-2 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+              />
+            </div>
+            {regErrors.name && <p className="mt-1 text-[10px] font-bold text-[#C62E40]">{regErrors.name}</p>}
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+              {activePathRole === 'corporate'
+                ? 'Work Email'
+                : activePathRole === 'institution'
+                ? 'Official Campus Email'
+                : 'Email Address'}
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#94A3B8]" />
+              <input
+                type="email"
+                placeholder={
+                  activePathRole === 'trainer'
+                    ? 'vikram@example.com'
+                    : activePathRole === 'institution'
+                    ? 'name@nit-campus.edu'
+                    : 'name@company.com'
+                }
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+                className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-9 pr-3 py-2 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+              />
+            </div>
+            {regErrors.email && <p className="mt-1 text-[10px] font-bold text-[#C62E40]">{regErrors.email}</p>}
+          </div>
+
+          {(activePathRole === 'corporate' || activePathRole === 'institution') && (
+            <div className="sm:col-span-2">
+              <label className="block text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+                {activePathRole === 'institution' ? 'Institution / Campus Name' : 'Organization Name'}
+              </label>
+              <div className="relative">
+                {activePathRole === 'institution' ? (
+                  <GraduationCap className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#94A3B8]" />
+                ) : (
+                  <Building2 className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#94A3B8]" />
+                )}
+                <input
+                  type="text"
+                  placeholder={
+                    activePathRole === 'institution'
+                      ? 'National Institute of Technology'
+                      : 'Acme Corporation'
+                  }
+                  value={regOrg}
+                  onChange={(e) => setRegOrg(e.target.value)}
+                  className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-9 pr-3 py-2 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+                />
+              </div>
+              {regErrors.org && <p className="mt-1 text-[10px] font-bold text-[#C62E40]">{regErrors.org}</p>}
+            </div>
+          )}
+
+          <div className="sm:col-span-2">
+            <label className="block text-[10px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
+              Password
+            </label>
+            <div className="relative">
+              <LockKeyhole className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#94A3B8]" />
+              <input
+                type="password"
+                placeholder="At least 8 characters"
+                value={regPassword}
+                onChange={(e) => setRegPassword(e.target.value)}
+                className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-9 pr-3 py-2 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
+              />
+            </div>
+            {regErrors.password && <p className="mt-1 text-[10px] font-bold text-[#C62E40]">{regErrors.password}</p>}
+          </div>
+        </div>
+
+        <div>
+          <label className="flex cursor-pointer items-start gap-2 text-[11px] font-semibold text-[#5A6680]">
+            <input
+              type="checkbox"
+              checked={regTerms}
+              onChange={(e) => setRegTerms(e.target.checked)}
+              className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded border-[#CBD5E1] accent-[#1677FF]"
+            />
+            <span>
+              I agree to the{' '}
+              <button type="button" className="font-bold text-[#1677FF]">
+                Terms of Service
+              </button>{' '}
+              and{' '}
+              <button type="button" className="font-bold text-[#1677FF]">
+                Privacy Policy
+              </button>
+              .
+            </span>
+          </label>
+          {regErrors.terms && <p className="mt-1 text-[10px] font-bold text-[#C62E40]">{regErrors.terms}</p>}
+        </div>
+
+        <button
+          type="submit"
+          disabled={regIsSubmitting}
+          className={`atlas-focus group flex h-11 w-full items-center justify-center gap-2 rounded-xl text-xs sm:text-sm font-black transition hover:-translate-y-0.5 disabled:opacity-70 ${
+            activePathRole === 'corporate'
+              ? 'bg-[#0E9F88] text-white hover:bg-[#0C8B77] shadow-[0_12px_28px_rgba(14,159,136,0.24)]'
+              : activePathRole === 'trainer'
+              ? 'bg-[#1677FF] text-white hover:bg-[#1562D6] shadow-[0_12px_28px_rgba(22,119,255,0.24)]'
+              : 'bg-[#7C3AED] text-white hover:bg-[#6D28D9] shadow-[0_12px_28px_rgba(124,58,237,0.24)]'
+          }`}
+        >
+          {regIsSubmitting ? (
+            'Creating account...'
+          ) : (
+            <>
+              {activePathRole === 'corporate' && 'Create Corporate Account'}
+              {activePathRole === 'trainer' && 'Create Trainer Account'}
+              {activePathRole === 'institution' && 'Create Institution Account'}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </>
+          )}
+        </button>
+      </form>
+    </div>
+  );
+
+  const renderSaaSPreview = () => (
+    <div id="platform-preview" className="mt-8 sm:mt-10 mx-auto max-w-4xl">
+      <div className="overflow-hidden rounded-2xl border border-[#D5E2EE] bg-[#EEF2F6] p-2 sm:p-2.5 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
+        <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-xs">
+          {/* Action Feedback Banner */}
+          {previewToast && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center justify-between border-b border-slate-900 bg-[#091536] px-4 py-2.5 text-xs text-white"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+                <span className="font-semibold">{previewToast}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewToast(null)}
+                className="text-slate-400 hover:text-white transition"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </motion.div>
+          )}
+
+          {/* CORPORATE / L&D PREVIEW WINDOW */}
+          {activePathRole === 'corporate' && (
+            <div>
+              {/* Window Header */}
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#EC6A5E]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#F4BF4F]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#61C554]" />
+                  </div>
+                  <span className="ml-2 font-mono text-[11px] sm:text-xs font-semibold text-slate-500">
+                    atlascircle.com / corporate / ai-matcher
+                  </span>
+                </div>
+                <span className="flex items-center gap-1.5 rounded-full bg-[#E8FAF5] px-3 py-1 text-[11px] font-extrabold text-[#0E8D76] border border-[#BDEBDD]">
+                  <span className="h-2 w-2 rounded-full bg-[#0E9F88]" />
+                  3 Matches Ready
+                </span>
+              </div>
+
+              {/* Sub-Tabs Bar */}
+              <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-2">
+                {[
+                  { id: 'dashboard', label: 'AI Shortlist' },
+                  { id: 'briefs', label: 'Active Brief' },
+                  { id: 'analytics', label: 'Metrics' },
+                ].map((subTab) => (
+                  <button
+                    key={subTab.id}
+                    type="button"
+                    onClick={() => setActivePreviewTab(subTab.id as any)}
+                    className={`rounded-t-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                      activePreviewTab === subTab.id
+                        ? 'bg-white text-slate-900 border-t-2 border-[#0E9F88] shadow-xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {subTab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sub-Tabs Content */}
+              <div className="p-4 sm:p-5 text-slate-800 min-h-[310px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                {/* 1. AI SHORTLIST */}
+                {activePreviewTab === 'dashboard' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#115E59] text-sm sm:text-base">Top Recommended Facilitators</span>
+                      <span className="font-bold text-[#0E9F88] text-xs sm:text-sm">Ranked by Outcome Score</span>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {/* Facilitator 1: Dr. Rajesh Verma */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#0E9F88] transition-all">
+                        <div className="flex items-center gap-3.5">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E8FAF5] font-black text-[#0E8D76] text-base border border-[#BDEBDD]">
+                            D
+                          </div>
+                          <div>
+                            <div className="text-sm font-black text-slate-900">Dr. Rajesh Verma</div>
+                            <div className="text-xs font-semibold text-slate-600">BFSI Leadership &amp; Risk Facilitator</div>
+                            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
+                              <span>16+ yrs</span>
+                              <span>•</span>
+                              <span>Ex-McKinsey</span>
+                              <span>•</span>
+                              <span className="font-bold text-slate-700 inline-flex items-center gap-1">
+                                <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                                4.95
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <span className="text-sm font-black text-[#0E9F88]">98% Match</span>
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Invite dispatched to Dr. Rajesh Verma! Complete your organization account above to confirm dates.')}
+                            className="rounded-lg bg-[#0E9F88] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#0C8B77] transition shadow-xs"
+                          >
+                            Invite
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Facilitator 2: Ananya Deshmukh */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#0E9F88] transition-all">
+                        <div className="flex items-center gap-3.5">
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#E8FAF5] font-black text-[#0E8D76] text-base border border-[#BDEBDD]">
+                            A
+                          </div>
+                          <div>
+                            <div className="text-sm font-black text-slate-900">Ananya Deshmukh</div>
+                            <div className="text-xs font-semibold text-slate-600">Enterprise Generative AI Adoption</div>
+                            <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-2">
+                              <span>11+ yrs</span>
+                              <span>•</span>
+                              <span>Trained TATA, Siemens</span>
+                              <span>•</span>
+                              <span className="font-bold text-slate-700 inline-flex items-center gap-1">
+                                <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                                4.98
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <span className="text-sm font-black text-[#0E9F88]">96% Match</span>
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Invite dispatched to Ananya Deshmukh! Complete your organization account above to confirm dates.')}
+                            className="rounded-lg bg-[#0E9F88] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#0C8B77] transition shadow-xs"
+                          >
+                            Invite
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Status Bar */}
+                    <div className="flex items-center justify-between rounded-xl bg-[#F8FAFC] px-4 py-2.5 border border-slate-200/80 text-xs font-semibold text-slate-600">
+                      <span className="flex items-center gap-1.5">
+                        <Zap className="h-4 w-4 text-amber-500" />
+                        <span>Avg shortlist response: <strong>&lt; 24 hours</strong></span>
+                      </span>
+                      <span className="text-[#0E9F88] font-bold">100% Quality Guaranteed</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. ACTIVE BRIEF */}
+                {activePreviewTab === 'briefs' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-slate-700">Brief #REQ-9482</span>
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                          Live • Sourcing Facilitators
+                        </span>
+                      </div>
+                      <span className="font-bold text-[#0E9F88]">4 Verified Proposals Received</span>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200/90 bg-[#F8FAFC] p-4 space-y-3">
+                      <div>
+                        <h5 className="text-sm font-black text-slate-900">
+                          Generative AI &amp; Agentic Workflows for Engineering Leaders
+                        </h5>
+                        <p className="text-xs text-slate-600 mt-1">
+                          TATA Enterprise L&amp;D • 2-Day Executive Masterclass (On-Site, Bengaluru)
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 text-xs">
+                        <span className="rounded-lg bg-white px-2.5 py-1 font-semibold text-slate-700 border border-slate-200">
+                          👥 32 Senior Directors &amp; Tech Leads
+                        </span>
+                        <span className="rounded-lg bg-white px-2.5 py-1 font-semibold text-slate-700 border border-slate-200">
+                          📅 Confirmed Dates: Sept 22-23
+                        </span>
+                        <span className="rounded-lg bg-[#E8FAF5] px-2.5 py-1 font-black text-[#0E8D76] border border-[#BDEBDD]">
+                          ₹ 2,40,000 Budget Allocated
+                        </span>
+                      </div>
+
+                      <div className="rounded-xl bg-white p-3 border border-slate-200/80 space-y-2">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                          Shortlisted Facilitator Bid Overview
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-800">Dr. Rajesh Verma</span>
+                          <span className="font-black text-[#0E9F88]">₹ 1,10,000 / day</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-bold text-slate-800">Ananya Deshmukh</span>
+                          <span className="font-black text-[#0E9F88]">₹ 95,000 / day</span>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handlePreviewAction('Brief selected! Sign up above to access the complete NDA and facilitate contract signing.')}
+                        className="w-full rounded-xl bg-[#0E9F88] py-2.5 text-xs font-black text-white hover:bg-[#0C8B77] transition shadow-xs"
+                      >
+                        Review &amp; Lock Facilitator Contract
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. METRICS */}
+                {activePreviewTab === 'analytics' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-black text-slate-800 text-sm">Enterprise Training Performance Metrics</span>
+                      <span className="text-xs font-bold text-[#0E9F88]">Quarterly Executive Report</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90 text-center">
+                        <div className="text-xl font-black text-[#0E9F88]">98.6%</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">CSAT Satisfaction</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90 text-center">
+                        <div className="text-xl font-black text-blue-600">&lt; 18 hrs</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Shortlist Turnaround</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90 text-center">
+                        <div className="text-xl font-black text-purple-600">₹ 24.5L</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Budget Optimized</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90 text-center">
+                        <div className="text-xl font-black text-emerald-600">100%</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Vetted Pedigree</div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-[#F8FAFC] p-3.5 border border-slate-200/90">
+                      <div className="text-xs font-bold text-slate-700 mb-2">Training Domains Delivered (This Quarter)</div>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-semibold text-slate-600">
+                        <div className="rounded-lg bg-white p-2 border border-slate-200">
+                          <span className="font-black text-slate-900 block text-xs">42%</span>
+                          <span>GenAI &amp; LLMs</span>
+                        </div>
+                        <div className="rounded-lg bg-white p-2 border border-slate-200">
+                          <span className="font-black text-slate-900 block text-xs">28%</span>
+                          <span>BFSI Leadership</span>
+                        </div>
+                        <div className="rounded-lg bg-white p-2 border border-slate-200">
+                          <span className="font-black text-slate-900 block text-xs">18%</span>
+                          <span>Agile Architecture</span>
+                        </div>
+                        <div className="rounded-lg bg-white p-2 border border-slate-200">
+                          <span className="font-black text-slate-900 block text-xs">12%</span>
+                          <span>DevSecOps &amp; Cloud</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TRAINER / FACILITATOR PREVIEW WINDOW */}
+          {activePathRole === 'trainer' && (
+            <div>
+              {/* Window Header */}
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#EC6A5E]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#F4BF4F]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#61C554]" />
+                  </div>
+                  <span className="ml-2 font-mono text-[11px] sm:text-xs font-semibold text-slate-500">
+                    atlascircle.com / trainer / portal
+                  </span>
+                </div>
+                <span className="flex items-center gap-1.5 rounded-full bg-[#EEF5FF] px-3 py-1 text-[11px] font-extrabold text-[#1677FF] border border-[#D0E2FF]">
+                  <span className="h-2 w-2 rounded-full bg-[#1677FF]" />
+                  4 Direct Briefs
+                </span>
+              </div>
+
+              {/* Sub-Tabs Bar */}
+              <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-2">
+                {[
+                  { id: 'dashboard', label: 'Lead Hub' },
+                  { id: 'briefs', label: 'Calendar' },
+                  { id: 'analytics', label: 'Earnings' },
+                ].map((subTab) => (
+                  <button
+                    key={subTab.id}
+                    type="button"
+                    onClick={() => setActivePreviewTab(subTab.id as any)}
+                    className={`rounded-t-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                      activePreviewTab === subTab.id
+                        ? 'bg-white text-slate-900 border-t-2 border-[#1677FF] shadow-xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {subTab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sub-Tabs Content */}
+              <div className="p-4 sm:p-5 text-slate-800 min-h-[310px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                {/* 1. LEAD HUB */}
+                {activePreviewTab === 'dashboard' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm sm:text-base">Direct Enterprise Briefs</span>
+                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-black text-blue-700 border border-blue-200">
+                        4 New
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {/* Brief 1 */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#1677FF] transition-all">
+                        <div>
+                          <div className="text-sm font-black text-slate-900">
+                            Generative AI for Enterprise Product Teams
+                          </div>
+                          <div className="text-xs font-semibold text-slate-600 mt-0.5">
+                            TATA Enterprise L&amp;D • Sept 22-23 • On-site
+                          </div>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <div className="text-sm font-black text-[#059669]">Rs 1,10,000 / day</div>
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Brief accepted! Complete your trainer account above to lock your delivery dates.')}
+                            className="rounded-lg bg-[#1677FF] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#1562D6] transition shadow-xs"
+                          >
+                            Accept Brief
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Brief 2 */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#1677FF] transition-all">
+                        <div>
+                          <div className="text-sm font-black text-slate-900">
+                            Executive High-Stakes Negotiation Masterclass
+                          </div>
+                          <div className="text-xs font-semibold text-slate-600 mt-0.5">
+                            Global Fintech Unicorn • Oct 04 • Virtual
+                          </div>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <div className="text-sm font-black text-[#059669]">Rs 95,000 / day</div>
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Brief accepted! Complete your trainer account above to lock your delivery dates.')}
+                            className="rounded-lg bg-[#1677FF] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#1562D6] transition shadow-xs"
+                          >
+                            Accept Brief
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Status Bar */}
+                    <div className="flex items-center justify-between rounded-xl bg-[#F8FAFC] px-4 py-2.5 border border-slate-200/80 text-xs font-semibold text-slate-600">
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="h-4 w-4 text-blue-500" />
+                        <span>Platform commission: <strong>0% (Keep 100%)</strong></span>
+                      </span>
+                      <span className="text-[#1677FF] font-bold">7-Day Direct Payout</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. CALENDAR */}
+                {activePreviewTab === 'briefs' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm">Confirmed Facilitation Calendar</span>
+                      <span className="text-xs font-bold text-[#1677FF]">3 Confirmed Engagements</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <div className="rounded-xl bg-[#F8FAFC] p-3.5 border border-slate-200/90 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-blue-100 text-[#1677FF] flex flex-col items-center justify-center font-bold text-[10px]">
+                            <span className="text-[12px] font-black">22</span>
+                            <span>SEP</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-slate-900">GenAI for Product Teams (2 Days)</div>
+                            <div className="text-[11px] text-slate-500">TATA Motors HQ • Mumbai (On-Site)</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-black text-emerald-600">₹ 2,20,000</div>
+                          <div className="text-[10px] font-bold text-slate-400">Confirmed</div>
+                        </div>
+                      </div>
+
+                      <div className="rounded-xl bg-[#F8FAFC] p-3.5 border border-slate-200/90 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg bg-blue-100 text-[#1677FF] flex flex-col items-center justify-center font-bold text-[10px]">
+                            <span className="text-[12px] font-black">04</span>
+                            <span>OCT</span>
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-slate-900">High-Stakes Negotiation Masterclass</div>
+                            <div className="text-[11px] text-slate-500">Global Fintech Unicorn • Virtual Live</div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs font-black text-emerald-600">₹ 95,000</div>
+                          <div className="text-[10px] font-bold text-slate-400">Confirmed</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handlePreviewAction('Calendar sync enabled! Register your trainer account above to connect Google Calendar or Outlook.')}
+                      className="w-full rounded-xl bg-[#1677FF] py-2.5 text-xs font-black text-white hover:bg-[#1562D6] transition shadow-xs"
+                    >
+                      Connect &amp; Sync With Google / Outlook Calendar
+                    </button>
+                  </div>
+                )}
+
+                {/* 3. EARNINGS */}
+                {activePreviewTab === 'analytics' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm">Consulting Earnings &amp; Direct Disbursements</span>
+                      <span className="text-xs font-bold text-[#1677FF]">100% Retained</span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2.5 text-center">
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-[#1677FF]">₹ 6,85,000</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Billed This Quarter</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-emerald-600 inline-flex items-center gap-1 justify-center">
+                          <span>4.96</span>
+                          <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+                        </div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Avg Participant Rating</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-purple-600">0%</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Platform Cut Taken</div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-emerald-50/80 p-3.5 border border-emerald-200 text-xs text-emerald-900">
+                      <div className="flex items-center justify-between font-bold">
+                        <span>Direct Payout Schedule</span>
+                        <span className="text-emerald-700">Bank Transfer (RTGS/NEFT)</span>
+                      </div>
+                      <p className="mt-1 text-[11px] text-emerald-800">
+                        Next scheduled disbursement: <strong>₹ 2,20,000</strong> on Sept 25 directly into your verified bank account.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* INSTITUTION / CAMPUS PREVIEW WINDOW */}
+          {activePathRole === 'institution' && (
+            <div>
+              {/* Window Header */}
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#EC6A5E]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#F4BF4F]" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#61C554]" />
+                  </div>
+                  <span className="ml-2 font-mono text-[11px] sm:text-xs font-semibold text-slate-500">
+                    atlascircle.com / campus / cohort-hub
+                  </span>
+                </div>
+                <span className="flex items-center gap-1.5 rounded-full bg-[#F3E8FF] px-3 py-1 text-[11px] font-extrabold text-[#7C3AED] border border-[#DDD6FE]">
+                  <span className="h-2 w-2 rounded-full bg-[#7C3AED]" />
+                  450 Active Students
+                </span>
+              </div>
+
+              {/* Sub-Tabs Bar */}
+              <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-2">
+                {[
+                  { id: 'dashboard', label: 'Active Cohorts' },
+                  { id: 'briefs', label: 'Bootcamps' },
+                  { id: 'analytics', label: 'Outcomes' },
+                ].map((subTab) => (
+                  <button
+                    key={subTab.id}
+                    type="button"
+                    onClick={() => setActivePreviewTab(subTab.id as any)}
+                    className={`rounded-t-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                      activePreviewTab === subTab.id
+                        ? 'bg-white text-slate-900 border-t-2 border-[#7C3AED] shadow-xs'
+                        : 'text-slate-500 hover:text-slate-900'
+                    }`}
+                  >
+                    {subTab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Sub-Tabs Content */}
+              <div className="p-4 sm:p-5 text-slate-800 min-h-[310px] bg-gradient-to-b from-white to-[#FAFCFE]">
+                {/* 1. ACTIVE COHORTS */}
+                {activePreviewTab === 'dashboard' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm sm:text-base">Ongoing Campus Programs</span>
+                      <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-black text-purple-700 border border-purple-200">
+                        2 Active
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {/* Program 1 */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#7C3AED] transition-all">
+                        <div>
+                          <div className="text-sm font-black text-slate-900">
+                            Industry AI &amp; Machine Learning Bootcamp
+                          </div>
+                          <div className="text-xs font-semibold text-slate-600 mt-0.5">
+                            120 CS Students • Lead AI Engineer
+                          </div>
+                          <span className="inline-block mt-1.5 rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-bold text-[#7C3AED] border border-purple-200">
+                            Week 3 of 6
+                          </span>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Cohort management opened! Sign up above to review student assessment reports.')}
+                            className="rounded-lg bg-[#7C3AED] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#6D28D9] transition shadow-xs"
+                          >
+                            Manage
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Program 2 */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl bg-[#F8FAFC] p-4 border border-slate-200/90 shadow-xs hover:border-[#7C3AED] transition-all">
+                        <div>
+                          <div className="text-sm font-black text-slate-900">
+                            Placement Readiness &amp; Case Interview Prep
+                          </div>
+                          <div className="text-xs font-semibold text-slate-600 mt-0.5">
+                            280 Students • Ex-Deloitte HR Director
+                          </div>
+                          <span className="inline-block mt-1.5 rounded-full bg-purple-50 px-2.5 py-0.5 text-[10px] font-bold text-[#7C3AED] border border-purple-200">
+                            Starts Monday
+                          </span>
+                        </div>
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 shrink-0 border-t sm:border-t-0 border-slate-200/60 pt-2 sm:pt-0">
+                          <button
+                            type="button"
+                            onClick={() => handlePreviewAction('Cohort management opened! Sign up above to review student assessment reports.')}
+                            className="rounded-lg bg-[#7C3AED] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#6D28D9] transition shadow-xs"
+                          >
+                            Manage
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom Status Bar */}
+                    <div className="flex items-center justify-between rounded-xl bg-[#F8FAFC] px-4 py-2.5 border border-slate-200/80 text-xs font-semibold text-slate-600">
+                      <span className="flex items-center gap-1.5">
+                        <TrendingUp className="h-4 w-4 text-purple-500" />
+                        <span>Campus placement boost: <strong>+40% avg</strong></span>
+                      </span>
+                      <span className="text-[#7C3AED] font-bold">Digital Verified Certs</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. BOOTCAMPS */}
+                {activePreviewTab === 'briefs' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm">Turnkey Masterclass Offerings</span>
+                      <span className="text-xs font-bold text-[#7C3AED]">Ready For Next Semester</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      <div className="rounded-xl bg-[#F8FAFC] p-3.5 border border-slate-200/90">
+                        <div className="text-xs font-black text-slate-900">Full-Stack GenAI &amp; Agentic Systems (60 Hours)</div>
+                        <p className="text-[11px] text-slate-600 mt-0.5">
+                          Hands-on capstone evaluated directly by FAANG engineering managers. Mapped to AICTE credit requirements.
+                        </p>
+                      </div>
+
+                      <div className="rounded-xl bg-[#F8FAFC] p-3.5 border border-slate-200/90">
+                        <div className="text-xs font-black text-slate-900">Investment Banking &amp; Financial Valuation (30 Hours)</div>
+                        <p className="text-[11px] text-slate-600 mt-0.5">
+                          Real corporate M&amp;A models and pitchbook modeling instructed by Big-4 advisory leaders.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handlePreviewAction('Bootcamp catalog selected! Sign up above to request tailored syllabi and institutional pricing.')}
+                      className="w-full rounded-xl bg-[#7C3AED] py-2.5 text-xs font-black text-white hover:bg-[#6D28D9] transition shadow-xs"
+                    >
+                      Request Syllabi &amp; Deploy to Next Semester
+                    </button>
+                  </div>
+                )}
+
+                {/* 3. OUTCOMES */}
+                {activePreviewTab === 'analytics' && (
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
+                      <span className="font-extrabold text-[#091536] text-sm">Graduate Placement &amp; Skill Outcomes</span>
+                      <span className="text-xs font-bold text-[#7C3AED]">Accredited Badges</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-[#7C3AED]">94.2%</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Placement Rate</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-emerald-600">450+</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Verified Certs</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-blue-600">38+</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Hiring Partners</div>
+                      </div>
+                      <div className="rounded-xl bg-[#F8FAFC] p-3 border border-slate-200/90">
+                        <div className="text-xl font-black text-amber-600">₹ 8.4 LPA</div>
+                        <div className="text-[10px] font-bold text-slate-600 mt-0.5">Avg Starting CTC</div>
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl bg-purple-50/80 p-3.5 border border-purple-200 text-xs text-purple-900">
+                      <div className="font-bold">Enterprise Recruiter Connect</div>
+                      <p className="mt-1 text-[11px] text-purple-800">
+                        Students completing AtlasCircle cohorts receive tamper-proof digital verified credentials recognized by 40+ multinational corporate hiring partners.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-white font-sans text-[#111111] antialiased selection:bg-[#1677FF] selection:text-white">
@@ -572,163 +1438,31 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                       <div className="flex flex-wrap items-center gap-3">
                         <button
                           type="button"
-                          onClick={scrollToRegisterForm}
+                          onClick={scrollToPlatformPreview}
                           className="inline-flex items-center gap-2 rounded-xl bg-[#0E9F88] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#0E9F88]/20 transition-all hover:bg-[#0C8B77] active:scale-98"
                         >
-                          <FileText className="h-4 w-4" />
-                          <span>Post a Training Brief</span>
+                          <Zap className="h-4 w-4" />
+                          <span>View Platform Preview</span>
                         </button>
                         <button
                           type="button"
-                          onClick={handleCorporateSignUp}
+                          onClick={scrollToRegisterForm}
                           className="inline-flex items-center gap-2 rounded-xl border border-[#0E9F88] bg-[#F4FBF9] px-4 py-3 text-xs sm:text-sm font-bold text-[#0E8D76] transition-all hover:bg-[#E8FAF5]"
                         >
-                          <span>Sign Up as Enterprise</span>
+                          <span>Register Organization</span>
                           <ArrowRight className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
                         <CheckCircle2 className="h-3 w-3 text-[#0E9F88] shrink-0" />
-                        <span>Free to post • Instant matching • Zero platform fee</span>
+                        <span>Direct enterprise briefs • Instant AI matching • Zero platform commission</span>
                       </p>
                     </div>
                   </div>
 
-                  {/* Right Column: Clean Light SaaS Preview */}
+                  {/* Right Column: Register Form */}
                   <div className="lg:col-span-7">
-                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
-                      {/* Window Header */}
-                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
-                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / corporate / ai-matcher</span>
-                        </div>
-                        <span className="flex items-center gap-1 rounded-full bg-[#E8FAF5] px-2.5 py-0.5 text-[10px] font-bold text-[#0E8D76] border border-[#BDEBDD]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#0E9F88]" /> 3 Matches Ready
-                        </span>
-                      </div>
-
-                      {/* Interactive Sub-Tabs */}
-                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
-                        {[
-                          { id: 'dashboard', label: 'AI Shortlist' },
-                          { id: 'briefs', label: 'Active Brief' },
-                          { id: 'analytics', label: 'Metrics' },
-                        ].map((subTab) => (
-                          <button
-                            key={subTab.id}
-                            type="button"
-                            onClick={() => setActivePreviewTab(subTab.id as any)}
-                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                              activePreviewTab === subTab.id
-                                ? 'bg-white text-slate-900 border-t-2 border-[#0E9F88] shadow-xs'
-                                : 'text-slate-500 hover:text-slate-900'
-                            }`}
-                          >
-                            {subTab.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Preview Window Content */}
-                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
-                        {activePreviewTab === 'dashboard' && (
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
-                              <span className="font-bold text-slate-700">Top Recommended Facilitators</span>
-                              <span className="font-semibold text-[#0E8D76] text-[11px]">Ranked by Outcome Score</span>
-                            </div>
-
-                            <div className="grid gap-2.5">
-                              {[
-                                { name: 'Dr. Rajesh Verma', role: 'BFSI Leadership & Risk Facilitator', exp: '16+ yrs • Ex-McKinsey', rating: '4.95', match: '98% Match' },
-                                { name: 'Ananya Deshmukh', role: 'Enterprise Generative AI Adoption', exp: '11+ yrs • Trained TATA, Siemens', rating: '4.98', match: '96% Match' },
-                              ].map((expert) => (
-                                <div key={expert.name} className="flex items-center justify-between rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#0E9F88] transition-all">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#E8FAF5] font-black text-[#0E8D76] text-xs border border-[#BDEBDD]">
-                                      {expert.name[0]}
-                                    </div>
-                                    <div>
-                                      <div className="text-xs font-bold text-slate-900">{expert.name}</div>
-                                      <div className="text-[11px] text-slate-500">{expert.role}</div>
-                                      <div className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1.5">
-                                        <span>{expert.exp}</span>
-                                        <span>•</span>
-                                        <span className="font-bold text-slate-700 inline-flex items-center gap-0.5">
-                                          <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
-                                          {expert.rating}
-                                        </span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="flex flex-col items-end gap-1">
-                                    <span className="rounded-full bg-[#E8FAF5] px-2 py-0.5 text-[11px] font-black text-[#0E8D76]">
-                                      {expert.match}
-                                    </span>
-                                    <button
-                                      type="button"
-                                      onClick={handleCorporateSignUp}
-                                      className="rounded-md bg-[#0E9F88] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#0C8B77] transition"
-                                    >
-                                      Invite
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
-                              <span className="flex items-center gap-1">
-                                <Zap className="h-3.5 w-3.5 text-amber-500" />
-                                <span>Avg shortlist response: <strong>&lt; 24 hours</strong></span>
-                              </span>
-                              <span className="text-[#0E8D76]">100% Quality Guaranteed</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'briefs' && (
-                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
-                            <div className="flex justify-between font-bold text-slate-500">
-                              <span>Brief #REQ-9482</span>
-                              <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
-                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                                4 Proposals Received
-                              </span>
-                            </div>
-                            <div className="font-bold text-slate-900 text-sm">GenAI for Engineering &amp; Product Leaders</div>
-                            <div className="flex gap-2 text-[11px] text-slate-500">
-                              <span className="rounded bg-slate-100 px-2 py-0.5">25 VPs</span>
-                              <span className="rounded bg-slate-100 px-2 py-0.5">2 Days On-site</span>
-                              <span className="rounded bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700">Rs 1.8L</span>
-                            </div>
-                            <button type="button" onClick={handleCorporateSignUp} className="mt-2 w-full rounded-lg bg-[#0E9F88] py-2 text-xs font-bold text-white hover:bg-[#0C8B77]">
-                              Review Shortlisted Proposals
-                            </button>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'analytics' && (
-                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-[#0E9F88]">98.4%</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Satisfaction Rate</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-blue-600">&lt; 24h</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Shortlist Time</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-purple-600">5,000+</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Vetted Trainers</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    {renderRegisterForm()}
                   </div>
                 </motion.div>
               )}
@@ -777,146 +1511,31 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                       <div className="flex flex-wrap items-center gap-3">
                         <button
                           type="button"
-                          onClick={handleTrainerSignUp}
+                          onClick={scrollToPlatformPreview}
                           className="inline-flex items-center gap-2 rounded-xl bg-[#1677FF] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#1677FF]/20 transition-all hover:bg-[#1562D6] active:scale-98"
                         >
-                          <span>Join as Verified Trainer</span>
-                          <ArrowRight className="h-4 w-4" />
+                          <Zap className="h-4 w-4" />
+                          <span>View Portal Preview</span>
                         </button>
                         <button
                           type="button"
-                          onClick={handleTrainerSignIn}
+                          onClick={scrollToRegisterForm}
                           className="inline-flex items-center gap-2 rounded-xl border border-[#1677FF] bg-[#F4F8FF] px-4 py-3 text-xs sm:text-sm font-bold text-[#1677FF] transition-all hover:bg-[#EEF5FF]"
                         >
-                          <span>Trainer Sign In</span>
+                          <span>Fill Trainer Form</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
                         <CheckCircle2 className="h-3 w-3 text-[#1677FF] shrink-0" />
-                        <span>Free profile setup • Verification in 48h • Keep 100% of fees</span>
+                        <span>Verified expert credentials • Fast-track approval • Keep 100% of fees</span>
                       </p>
                     </div>
                   </div>
 
-                  {/* Right Column: Clean Light SaaS Preview */}
+                  {/* Right Column: Register Form */}
                   <div className="lg:col-span-7">
-                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
-                      {/* Window Header */}
-                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
-                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / trainer / portal</span>
-                        </div>
-                        <span className="flex items-center gap-1 rounded-full bg-[#EEF5FF] px-2.5 py-0.5 text-[10px] font-bold text-[#1677FF] border border-[#D0E2FF]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#1677FF]" /> 4 Direct Briefs
-                        </span>
-                      </div>
-
-                      {/* Interactive Sub-Tabs */}
-                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
-                        {[
-                          { id: 'dashboard', label: 'Lead Hub' },
-                          { id: 'briefs', label: 'Calendar' },
-                          { id: 'analytics', label: 'Earnings' },
-                        ].map((subTab) => (
-                          <button
-                            key={subTab.id}
-                            type="button"
-                            onClick={() => setActivePreviewTab(subTab.id as any)}
-                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                              activePreviewTab === subTab.id
-                                ? 'bg-white text-slate-900 border-t-2 border-[#1677FF] shadow-xs'
-                                : 'text-slate-500 hover:text-slate-900'
-                            }`}
-                          >
-                            {subTab.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Preview Window Content */}
-                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
-                        {activePreviewTab === 'dashboard' && (
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
-                              <span className="font-bold text-slate-700">Direct Enterprise Briefs</span>
-                              <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700">4 New</span>
-                            </div>
-
-                            <div className="grid gap-2.5">
-                              {[
-                                { title: 'Generative AI for Enterprise Product Teams', client: 'TATA Enterprise L&D', fee: 'Rs 1,10,000 / day', date: 'Sept 22-23 • On-site' },
-                                { title: 'Executive High-Stakes Negotiation Masterclass', client: 'Global Fintech Unicorn', fee: 'Rs 95,000 / day', date: 'Oct 04 • Virtual' },
-                              ].map((lead) => (
-                                <div key={lead.title} className="flex justify-between items-center rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#1677FF] transition-all">
-                                  <div>
-                                    <div className="text-xs font-bold text-slate-900">{lead.title}</div>
-                                    <div className="text-[11px] text-slate-500">{lead.client} • {lead.date}</div>
-                                  </div>
-                                  <div className="text-right shrink-0 ml-3">
-                                    <div className="text-xs font-black text-emerald-600">{lead.fee}</div>
-                                    <button
-                                      type="button"
-                                      onClick={handleTrainerSignUp}
-                                      className="mt-1 rounded-md bg-[#1677FF] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#1562D6] transition"
-                                    >
-                                      Accept Brief
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
-                              <span className="flex items-center gap-1">
-                                <ShieldCheck className="h-3.5 w-3.5 text-blue-500" />
-                                <span>Platform commission: <strong>0% (Keep 100%)</strong></span>
-                              </span>
-                              <span className="text-[#1677FF]">7-Day Direct Payout</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'briefs' && (
-                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
-                            <div className="font-bold text-slate-900">Upcoming Facilitation Calendar</div>
-                            <div className="text-slate-500 text-[11px]">3 Verified Sessions Confirmed for This Month</div>
-                            <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                              <div className="rounded-lg bg-slate-50 p-2 border border-slate-200">
-                                <div className="font-bold text-slate-900">Sept 18-19</div>
-                                <div className="text-slate-500">TATA Cohort • Rs 1.8L</div>
-                              </div>
-                              <div className="rounded-lg bg-slate-50 p-2 border border-slate-200">
-                                <div className="font-bold text-slate-900">Sept 28</div>
-                                <div className="text-slate-500">Fintech Sales • Rs 90k</div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'analytics' && (
-                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-[#1677FF]">100%</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Earnings Kept</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-emerald-600 inline-flex items-center gap-1 justify-center">
-                                <span>4.92</span>
-                                <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
-                              </div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Avg Trainer Rating</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-purple-600">0%</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Platform Cut</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    {renderRegisterForm()}
                   </div>
                 </motion.div>
               )}
@@ -965,18 +1584,19 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                       <div className="flex flex-wrap items-center gap-3">
                         <button
                           type="button"
-                          onClick={handleInstitutionSignUp}
+                          onClick={scrollToPlatformPreview}
                           className="inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-5 py-3 text-xs sm:text-sm font-bold text-white shadow-md shadow-[#7C3AED]/20 transition-all hover:bg-[#6D28D9] active:scale-98"
                         >
-                          <span>Register Institution</span>
-                          <ArrowRight className="h-4 w-4" />
+                          <Zap className="h-4 w-4" />
+                          <span>View Campus Preview</span>
                         </button>
                         <button
                           type="button"
-                          onClick={handleInstitutionSignIn}
+                          onClick={scrollToRegisterForm}
                           className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED] bg-[#FAF5FF] px-4 py-3 text-xs sm:text-sm font-bold text-[#7C3AED] transition-all hover:bg-[#F3E8FF]"
                         >
-                          <span>Institution Log In</span>
+                          <span>Fill Campus Form</span>
+                          <ArrowRight className="h-3.5 w-3.5" />
                         </button>
                       </div>
                       <p className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1.5">
@@ -986,374 +1606,16 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
                     </div>
                   </div>
 
-                  {/* Right Column: Clean Light SaaS Preview */}
+                  {/* Right Column: Register Form */}
                   <div className="lg:col-span-7">
-                    <div className="overflow-hidden rounded-2xl border border-[#DCE8F4] bg-white shadow-[0_12px_30px_rgba(20,45,80,0.05)]">
-                      {/* Window Header */}
-                      <div className="flex items-center justify-between border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 py-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/80" />
-                          <span className="h-2.5 w-2.5 rounded-full bg-[#10B981]/80" />
-                          <span className="ml-2 text-xs font-mono font-medium text-slate-500">atlascircle.com / campus / cohort-hub</span>
-                        </div>
-                        <span className="flex items-center gap-1 rounded-full bg-[#F3E8FF] px-2.5 py-0.5 text-[10px] font-bold text-[#7C3AED] border border-[#DDD6FE]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#7C3AED]" /> 450 Active Students
-                        </span>
-                      </div>
-
-                      {/* Interactive Sub-Tabs */}
-                      <div className="flex items-center gap-1 border-b border-[#E2E8F0] bg-[#F8FAFC] px-4 pt-1.5">
-                        {[
-                          { id: 'dashboard', label: 'Active Cohorts' },
-                          { id: 'briefs', label: 'Bootcamps' },
-                          { id: 'analytics', label: 'Outcomes' },
-                        ].map((subTab) => (
-                          <button
-                            key={subTab.id}
-                            type="button"
-                            onClick={() => setActivePreviewTab(subTab.id as any)}
-                            className={`rounded-t-lg px-3 py-1.5 text-xs font-bold transition-all ${
-                              activePreviewTab === subTab.id
-                                ? 'bg-white text-slate-900 border-t-2 border-[#7C3AED] shadow-xs'
-                                : 'text-slate-500 hover:text-slate-900'
-                            }`}
-                          >
-                            {subTab.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {/* Preview Window Content */}
-                      <div className="p-4 text-slate-800 min-h-[290px] bg-gradient-to-b from-white to-[#FAFCFE]">
-                        {activePreviewTab === 'dashboard' && (
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between text-xs pb-1 border-b border-slate-100">
-                              <span className="font-bold text-slate-700">Ongoing Campus Programs</span>
-                              <span className="rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-bold text-purple-700">2 Active</span>
-                            </div>
-
-                            <div className="grid gap-2.5">
-                              {[
-                                { title: 'Industry AI & Machine Learning Bootcamp', students: '120 CS Students', facilitator: 'Lead AI Engineer', status: 'Week 3 of 6' },
-                                { title: 'Placement Readiness & Case Interview Prep', students: '280 Students', facilitator: 'Ex-Deloitte HR Director', status: 'Starts Monday' },
-                              ].map((cohort) => (
-                                <div key={cohort.title} className="flex justify-between items-center rounded-xl bg-white p-3 border border-[#E2E8F0] shadow-xs hover:border-[#7C3AED] transition-all">
-                                  <div>
-                                    <div className="text-xs font-bold text-slate-900">{cohort.title}</div>
-                                    <div className="text-[11px] text-slate-500">{cohort.students} • {cohort.facilitator}</div>
-                                    <span className="inline-block mt-1 rounded bg-purple-50 px-2 py-0.5 text-[10px] font-bold text-[#7C3AED]">
-                                      {cohort.status}
-                                    </span>
-                                  </div>
-                                  <button
-                                    type="button"
-                                    onClick={handleInstitutionSignUp}
-                                    className="rounded-md bg-[#7C3AED] px-2.5 py-1 text-[11px] font-bold text-white hover:bg-[#6D28D9] transition"
-                                  >
-                                    Manage
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-
-                            <div className="flex items-center justify-between rounded-lg bg-[#F8FAFC] px-3 py-2 border border-slate-200/80 text-[11px] font-semibold text-slate-600">
-                              <span className="flex items-center gap-1">
-                                <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
-                                <span>Campus placement boost: <strong>+40% avg</strong></span>
-                              </span>
-                              <span className="text-[#7C3AED]">Digital Verified Certs</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'briefs' && (
-                          <div className="rounded-xl bg-white p-3.5 border border-[#E2E8F0] space-y-2 text-xs">
-                            <div className="font-bold text-slate-900">Upcoming Campus Bootcamps</div>
-                            <p className="text-slate-500 text-[11px] leading-relaxed">
-                              4 turnkey intensive programs ready to deploy with pre-tested syllabi and industry project evaluations.
-                            </p>
-                            <button type="button" onClick={handleInstitutionSignUp} className="w-full rounded-lg bg-[#7C3AED] py-2 text-xs font-bold text-white hover:bg-[#6D28D9]">
-                              Explore Bootcamp Catalog
-                            </button>
-                          </div>
-                        )}
-
-                        {activePreviewTab === 'analytics' && (
-                          <div className="grid grid-cols-3 gap-2.5 text-center pt-2">
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-[#7C3AED]">450+</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Students Enrolled</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-emerald-600">94%</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Placement Rate</div>
-                            </div>
-                            <div className="rounded-xl bg-white p-3 border border-[#E2E8F0]">
-                              <div className="text-xl font-black text-blue-600">100%</div>
-                              <div className="text-[10px] font-bold text-slate-500 mt-0.5">Verifiable Certs</div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                    {renderRegisterForm()}
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
-
-          {/* EMBEDDED REGISTRATION FORM DIRECTLY BENEATH PATH SELECTION */}
-          <div id="inline-register-form" className="mt-8 sm:mt-10 mx-auto max-w-4xl">
-            <div className="relative overflow-hidden rounded-[24px] border border-[#DCE8F4] bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(20,45,80,0.07)]">
-              <div className="absolute inset-x-10 top-0 h-px bg-[linear-gradient(90deg,transparent,#0E9F88,#1677FF,#7C3AED,transparent)]" />
-
-              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <div>
-                  <div
-                    className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] ${
-                      activePathRole === 'corporate'
-                        ? 'text-[#0E9F88]'
-                        : activePathRole === 'trainer'
-                        ? 'text-[#1677FF]'
-                        : 'text-[#7C3AED]'
-                    }`}
-                  >
-                    <Sparkles className="h-3 w-3" />
-                    {activePathRole === 'corporate' && 'Corporate Registration'}
-                    {activePathRole === 'trainer' && 'Trainer Registration'}
-                    {activePathRole === 'institution' && 'Institution Registration'}
-                  </div>
-                  <h3 className="atlas-display mt-1 text-xl sm:text-2xl font-black text-[#091536]">
-                    Create your AtlasCircle account
-                  </h3>
-                  <p className="mt-0.5 text-xs font-semibold text-[#5A6680]">
-                    {activePathRole === 'corporate' && 'Sign up as an organization to start sourcing verified corporate trainers.'}
-                    {activePathRole === 'trainer' && 'Sign up as an expert trainer to receive direct enterprise briefs.'}
-                    {activePathRole === 'institution' && 'Sign up as an institution to bring industry masterclasses to campus.'}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleFillDemoReg}
-                  className="self-start sm:self-auto inline-flex items-center gap-1.5 rounded-full border border-[#1677FF]/30 bg-[#EEF5FF] px-3.5 py-1.5 text-xs font-black text-[#1677FF] transition hover:bg-[#DDF0FF]"
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-[#1677FF]" />
-                  Auto-Fill Demo Data
-                </button>
-              </div>
-
-              {/* ACTIVE PATH ROLE INDICATOR BANNER */}
-              <div
-                className={`mb-6 flex items-center justify-between rounded-2xl border p-4 transition-all duration-300 ${
-                  activePathRole === 'corporate'
-                    ? 'border-[#BDEBDD] bg-[linear-gradient(135deg,#F0FCF8,#F7FFFC)]'
-                    : activePathRole === 'trainer'
-                    ? 'border-[#D0E2FF] bg-[linear-gradient(135deg,#EEF5FF,#F5F9FF)]'
-                    : 'border-[#DDD6FE] bg-[linear-gradient(135deg,#F3E8FF,#FAF5FF)]'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm ${
-                      activePathRole === 'corporate'
-                        ? 'bg-[#0E9F88]'
-                        : activePathRole === 'trainer'
-                        ? 'bg-[#1677FF]'
-                        : 'bg-[#7C3AED]'
-                    }`}
-                  >
-                    {activePathRole === 'corporate' && <Building2 className="h-5 w-5" />}
-                    {activePathRole === 'trainer' && <UsersRound className="h-5 w-5" />}
-                    {activePathRole === 'institution' && <GraduationCap className="h-5 w-5" />}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                        Selected Role
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
-                          activePathRole === 'corporate'
-                            ? 'bg-[#0E9F88]/15 text-[#0E8D76]'
-                            : activePathRole === 'trainer'
-                            ? 'bg-[#1677FF]/15 text-[#1677FF]'
-                            : 'bg-[#7C3AED]/15 text-[#7C3AED]'
-                        }`}
-                      >
-                        {activePathRole === 'corporate' && 'Corporate & L&D'}
-                        {activePathRole === 'trainer' && 'Trainer / Facilitator'}
-                        {activePathRole === 'institution' && 'College / Institution'}
-                      </span>
-                    </div>
-                    <div className="text-xs font-semibold text-slate-600 mt-0.5">
-                      {activePathRole === 'corporate' && 'Hiring verified corporate trainers for organizations'}
-                      {activePathRole === 'trainer' && 'Providing training and getting hired directly with 0% cut'}
-                      {activePathRole === 'institution' && 'Organizing masterclasses and placement bootcamps for students'}
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    const el = document.getElementById('choose-path');
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }}
-                  className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition"
-                  title="Change path in the section above"
-                >
-                  <span>Switch path</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
-              {/* REGISTRATION FORM INPUTS */}
-              <form onSubmit={handleRegSubmit} className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <UserRound className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
-                      <input
-                        type="text"
-                        placeholder={
-                          activePathRole === 'trainer'
-                            ? 'Vikram Malhotra'
-                            : activePathRole === 'institution'
-                            ? 'Dr. Ramesh Rao'
-                            : 'Sarah Jenkins'
-                        }
-                        value={regName}
-                        onChange={(e) => setRegName(e.target.value)}
-                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
-                      />
-                    </div>
-                    {regErrors.name && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.name}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
-                      {activePathRole === 'corporate'
-                        ? 'Work Email'
-                        : activePathRole === 'institution'
-                        ? 'Official Campus Email'
-                        : 'Email Address'}
-                    </label>
-                    <div className="relative">
-                      <Mail className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
-                      <input
-                        type="email"
-                        placeholder={
-                          activePathRole === 'trainer'
-                            ? 'vikram@example.com'
-                            : activePathRole === 'institution'
-                            ? 'name@nit-campus.edu'
-                            : 'name@company.com'
-                        }
-                        value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
-                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
-                      />
-                    </div>
-                    {regErrors.email && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.email}</p>}
-                  </div>
-
-                  {(activePathRole === 'corporate' || activePathRole === 'institution') && (
-                    <div className="sm:col-span-2">
-                      <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
-                        {activePathRole === 'institution' ? 'Institution / Campus Name' : 'Organization Name'}
-                      </label>
-                      <div className="relative">
-                        {activePathRole === 'institution' ? (
-                          <GraduationCap className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
-                        ) : (
-                          <Building2 className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
-                        )}
-                        <input
-                          type="text"
-                          placeholder={
-                            activePathRole === 'institution'
-                              ? 'National Institute of Technology'
-                              : 'Acme Corporation'
-                          }
-                          value={regOrg}
-                          onChange={(e) => setRegOrg(e.target.value)}
-                          className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
-                        />
-                      </div>
-                      {regErrors.org && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.org}</p>}
-                    </div>
-                  )}
-
-                  <div className="sm:col-span-2">
-                    <label className="block text-[11px] font-extrabold uppercase tracking-wider text-[#64748B] mb-1">
-                      Password
-                    </label>
-                    <div className="relative">
-                      <LockKeyhole className="absolute left-3.5 top-3 h-4 w-4 text-[#94A3B8]" />
-                      <input
-                        type="password"
-                        placeholder="At least 8 characters"
-                        value={regPassword}
-                        onChange={(e) => setRegPassword(e.target.value)}
-                        className="w-full rounded-xl border border-[#CBD5E1] bg-white pl-10 pr-3.5 py-2.5 text-xs font-semibold text-[#091536] placeholder:text-[#94A3B8] focus:border-[#1677FF] focus:outline-none"
-                      />
-                    </div>
-                    {regErrors.password && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.password}</p>}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex cursor-pointer items-start gap-2.5 text-xs font-semibold text-[#5A6680]">
-                    <input
-                      type="checkbox"
-                      checked={regTerms}
-                      onChange={(e) => setRegTerms(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 shrink-0 rounded border-[#CBD5E1] accent-[#1677FF]"
-                    />
-                    <span>
-                      I agree to the{' '}
-                      <button type="button" className="font-bold text-[#1677FF]">
-                        Terms of Service
-                      </button>{' '}
-                      and{' '}
-                      <button type="button" className="font-bold text-[#1677FF]">
-                        Privacy Policy
-                      </button>
-                      .
-                    </span>
-                  </label>
-                  {regErrors.terms && <p className="mt-1 text-[11px] font-bold text-[#C62E40]">{regErrors.terms}</p>}
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={regIsSubmitting}
-                  className={`atlas-focus group flex h-11 w-full items-center justify-center gap-2 rounded-xl text-sm font-black transition hover:-translate-y-0.5 disabled:opacity-70 ${
-                    activePathRole === 'corporate'
-                      ? 'bg-[#0E9F88] text-white hover:bg-[#0C8B77] shadow-[0_12px_28px_rgba(14,159,136,0.24)]'
-                      : activePathRole === 'trainer'
-                      ? 'bg-[#1677FF] text-white hover:bg-[#1562D6] shadow-[0_12px_28px_rgba(22,119,255,0.24)]'
-                      : 'bg-[#7C3AED] text-white hover:bg-[#6D28D9] shadow-[0_12px_28px_rgba(124,58,237,0.24)]'
-                  }`}
-                >
-                  {regIsSubmitting ? (
-                    'Creating account...'
-                  ) : (
-                    <>
-                      {activePathRole === 'corporate' && 'Create Corporate Account'}
-                      {activePathRole === 'trainer' && 'Create Trainer Account'}
-                      {activePathRole === 'institution' && 'Create Institution Account'}
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                    </>
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
+          {/* PLATFORM SAAS PREVIEW WINDOW DIRECTLY BENEATH PATH SELECTION */}
+          {renderSaaSPreview()}
 
 
           {/* TRUSTED BY LEADING ORGANIZATIONS (Original Brand Logos) */}
