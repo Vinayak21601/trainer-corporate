@@ -439,6 +439,14 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
         </div>
       )}
 
+      {/* MOBILE BACKDROP OVERLAY */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-xs md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR NAVIGATION */}
       <aside 
         className={`fixed inset-y-0 left-0 z-40 w-64 bg-white text-[#091536] border-r border-slate-200 shadow-2xs flex flex-col justify-between transition-transform duration-300 ${
@@ -448,7 +456,10 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
         <div className="flex flex-col flex-1 overflow-y-auto">
           {/* BRAND HEADER */}
           <div className="p-4 px-5 border-b border-slate-100 flex items-center justify-between">
-            <div className="flex items-center gap-3 cursor-pointer" onClick={() => router.push('/')}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => {
+              if (typeof window !== 'undefined' && window.innerWidth < 768) setIsSidebarOpen(false);
+              router.push('/');
+            }}>
               <img src="/logo/atlas-logo.png" alt="AtlasCircle Logo" className="h-8 w-auto object-contain" />
               <div>
                 <p className="text-xs font-black tracking-wider uppercase text-[#1677FF] leading-none">Trainer Hub</p>
@@ -459,7 +470,10 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
           {/* DECLUTTERED TRAINER USER BADGE */}
           <div 
-            onClick={handleOpenEditProfile}
+            onClick={() => {
+              handleOpenEditProfile();
+              if (typeof window !== 'undefined' && window.innerWidth < 768) setIsSidebarOpen(false);
+            }}
             className="mx-3 my-3 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-slate-100/80 hover:border-blue-300 transition cursor-pointer group space-y-2.5 shadow-2xs"
           >
             <div className="flex items-center justify-between gap-2">
@@ -475,7 +489,11 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
               <button 
                 type="button" 
-                onClick={(e) => { e.stopPropagation(); handleOpenEditProfile(); }}
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  handleOpenEditProfile(); 
+                  if (typeof window !== 'undefined' && window.innerWidth < 768) setIsSidebarOpen(false);
+                }}
                 className="p-1.5 rounded-lg bg-white text-slate-600 border border-slate-200 group-hover:bg-[#1677FF] group-hover:text-white group-hover:border-[#1677FF] transition shrink-0 shadow-2xs"
                 title="Edit Profile"
               >
@@ -516,7 +534,12 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 <button
                   key={item.id}
                   type="button"
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                      setIsSidebarOpen(false);
+                    }
+                  }}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
                     isActive 
                       ? 'bg-[#1677FF] text-white shadow-md shadow-[#1677FF]/25 font-black' 
@@ -544,7 +567,10 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
         <div className="p-4 border-t border-slate-100 space-y-3">
           <button
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.innerWidth < 768) setIsSidebarOpen(false);
+              router.push('/');
+            }}
             className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-100 border border-slate-200 px-3.5 py-2 text-xs font-bold text-[#091536] hover:bg-slate-200 transition"
           >
             <Home className="h-4 w-4 text-slate-500" />
@@ -557,26 +583,27 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
       <div className="flex-1 md:ml-64 flex flex-col min-w-0">
         
         {/* TOP APP HEADER */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white/90 px-4 sm:px-8 py-3.5 shadow-2xs backdrop-blur-md">
-          <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-slate-200 bg-white/90 px-3 sm:px-8 py-3 shadow-2xs backdrop-blur-md">
+          <div className="flex items-center gap-2.5 min-w-0">
             <button
               type="button"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="md:hidden p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100"
+              className="md:hidden p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 shrink-0"
+              aria-label="Toggle Sidebar"
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div>
-              <h1 className="text-lg font-black text-[#091536] capitalize tracking-tight">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-base sm:text-lg font-black text-[#091536] capitalize tracking-tight truncate">
                 {activeTab.replaceAll('-', ' ')}
               </h1>
-              <p className="text-[11px] text-slate-500 font-semibold">
-                Atlas Facilitator Ecosystem &bull; Logged in as <span className="text-[#1677FF]">{trainerName}</span>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold truncate">
+                Atlas Facilitator Ecosystem &bull; <span className="text-[#1677FF] hidden sm:inline">{trainerName}</span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Availability Toggle Button */}
             <button
               type="button"
@@ -584,19 +611,20 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 setAvailabilityStatus(!availabilityStatus);
                 triggerToast(availabilityStatus ? 'Status updated: Offline for new briefs' : 'Status updated: Available for September assignments!');
               }}
-              className={`hidden sm:inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-extrabold border transition ${
+              className={`inline-flex items-center gap-1.5 sm:gap-2 rounded-xl px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-[11px] sm:text-xs font-extrabold border transition ${
                 availabilityStatus
                   ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
                   : 'bg-slate-100 text-slate-600 border-slate-300 hover:bg-slate-200'
               }`}
             >
               <span className={`h-2 w-2 rounded-full ${availabilityStatus ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`}></span>
-              <span>{availabilityStatus ? 'Available for Bookings' : 'Set Unavailable'}</span>
+              <span className="hidden sm:inline">{availabilityStatus ? 'Available for Bookings' : 'Set Unavailable'}</span>
+              <span className="sm:hidden">{availabilityStatus ? 'Available' : 'Unavailable'}</span>
             </button>
 
-            <div className="inline-flex items-center gap-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 px-3 py-1.5 text-xs font-black shadow-2xs">
+            <div className="inline-flex items-center gap-1 sm:gap-1.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 px-2.5 sm:px-3 py-1.5 text-[11px] sm:text-xs font-black shadow-2xs">
               <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-              <span>4.8 Rating</span>
+              <span>4.8</span>
             </div>
           </div>
         </header>
@@ -627,11 +655,11 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                   </p>
                 </div>
 
-                <div className="shrink-0 flex flex-wrap items-center gap-3">
+                <div className="w-full md:w-auto shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                   <button
                     type="button"
                     onClick={handleOpenEditProfile}
-                    className="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-xs font-bold text-[#091536] shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition active:scale-98"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-2.5 text-xs font-bold text-[#091536] shadow-2xs hover:bg-slate-50 hover:border-slate-300 transition active:scale-98"
                   >
                     <Edit3 className="h-4 w-4 text-[#1677FF]" />
                     <span>Edit Profile</span>
@@ -640,7 +668,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                   <button
                     type="button"
                     onClick={() => setActiveTab('opportunities')}
-                    className="inline-flex items-center gap-2 rounded-xl bg-[#0E9F88] px-4 py-2.5 text-xs font-bold text-white shadow-2xs hover:bg-[#0C8975] transition active:scale-98"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-4 py-2.5 text-xs font-bold text-white shadow-2xs hover:bg-[#0C8975] transition active:scale-98"
                   >
                     <Briefcase className="h-4 w-4" />
                     <span>Browse Opportunities</span>
@@ -717,7 +745,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                         <div className="bg-[#1677FF] h-full" style={{ width: '30%' }}></div>
                         <div className="bg-amber-500 h-full" style={{ width: '10%' }}></div>
                       </div>
-                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 pt-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold text-slate-500 pt-1">
                         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-rose-500"></span> In Progress (60%)</span>
                         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#1677FF]"></span> Completed (30%)</span>
                         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500"></span> Pending (10%)</span>
@@ -725,25 +753,25 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                     </div>
 
                     {/* 3 STATS ROW */}
-                    <div className="grid grid-cols-3 gap-3 pt-3 border-t border-slate-100 text-center">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3 pt-3 border-t border-slate-100 text-center">
                       <div>
                         <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Proposals</span>
-                        <span className="text-lg font-black text-[#091536]">46%</span>
+                        <span className="text-base sm:text-lg font-black text-[#091536]">46%</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Avg Score</span>
-                        <span className="text-lg font-black text-emerald-600">78%</span>
+                        <span className="text-base sm:text-lg font-black text-emerald-600">78%</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold uppercase text-slate-400 block">Attendance</span>
-                        <span className="text-lg font-black text-[#1677FF]">94%</span>
+                        <span className="text-base sm:text-lg font-black text-[#1677FF]">94%</span>
                       </div>
                     </div>
                   </div>
 
                   {/* PAST COMPLETED TRAININGS & ENGAGEMENTS CARD */}
                   <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-2xs space-y-4">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <div>
                         <h3 className="text-sm font-black text-[#091536]">Past Completed Trainings &amp; Engagements</h3>
                         <p className="text-[11px] text-slate-500 font-medium mt-0.5">Historical record of corporate training programs delivered by {trainerName}</p>
@@ -759,7 +787,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                     </div>
 
                     <div className="overflow-x-auto">
-                      <table className="w-full text-left text-xs">
+                      <table className="w-full text-left text-xs min-w-[650px]">
                         <thead>
                           <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400">
                             <th className="py-2.5 px-3">Corporate Client</th>
@@ -1262,7 +1290,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                           </p>
                         </div>
 
-                        <div className="text-right shrink-0">
+                        <div className="text-left sm:text-right shrink-0">
                           <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 text-[#1677FF] border border-blue-300 px-3.5 py-1 text-xs font-black">
                             <Sparkles className="h-3.5 w-3.5 text-[#1677FF]" /> Match Score: {opp.matchScore}%
                           </span>
@@ -1283,18 +1311,18 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                       </div>
 
                       {/* ACTIONS */}
-                      <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                      <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-100">
                         <button
                           type="button"
                           onClick={() => setSelectedOpportunity(opp)}
-                          className="text-xs font-bold text-[#1677FF] hover:underline"
+                          className="text-xs font-bold text-[#1677FF] hover:underline text-left sm:text-left"
                         >
                           View Full Requirement Details &rarr;
                         </button>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                           {isSubmitted ? (
-                            <span className="rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-2 text-xs font-black inline-flex items-center gap-1.5">
+                            <span className="rounded-xl bg-emerald-100 text-emerald-800 border border-emerald-300 px-4 py-2 text-xs font-black inline-flex items-center justify-center gap-1.5">
                               <Check className="h-4 w-4 text-emerald-700" /> Proposal Submitted
                             </span>
                           ) : (
@@ -1302,14 +1330,14 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                               <button
                                 type="button"
                                 onClick={() => triggerToast(`Marked interest in ${opp.companyName}'s brief!`)}
-                                className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition"
+                                className="rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition text-center"
                               >
                                 I'm Interested
                               </button>
                               <button
                                 type="button"
                                 onClick={() => setSelectedOpportunity(opp)}
-                                className="rounded-xl bg-[#0E9F88] px-5 py-2.5 text-xs font-black text-white shadow-md shadow-[#0E9F88]/20 hover:bg-[#0C8975] transition"
+                                className="rounded-xl bg-[#0E9F88] px-5 py-2.5 text-xs font-black text-white shadow-md shadow-[#0E9F88]/20 hover:bg-[#0C8975] transition text-center"
                               >
                                 Submit Proposal
                               </button>
@@ -1355,7 +1383,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
               <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs space-y-4">
                 <h3 className="text-base font-black text-[#091536]">Completed Assignments History</h3>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-xs min-w-[650px]">
                     <thead>
                       <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400">
                         <th className="py-3 px-3">Corporate Client</th>
@@ -1451,8 +1479,8 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 </div>
 
                 {/* RATINGS RADAR BREAKDOWN */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
-                  <div className="md:col-span-1 border-r border-slate-200/80 pr-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
+                  <div className="sm:col-span-2 md:col-span-1 border-b md:border-b-0 md:border-r border-slate-200/80 pb-4 md:pb-0 md:pr-4">
                     <p className="text-xs font-black uppercase text-slate-400">Overall Rating</p>
                     <p className="text-3xl font-black text-amber-500 mt-1">⭐ 4.8</p>
                     <p className="text-[10px] text-slate-500 font-bold mt-1">Top 2% Trainer</p>
@@ -1502,7 +1530,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-xs min-w-[650px]">
                     <thead>
                       <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400">
                         <th className="py-3 px-3">Corporate Client</th>
@@ -1579,7 +1607,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs">
+                  <table className="w-full text-left text-xs min-w-[650px]">
                     <thead>
                       <tr className="border-b border-slate-200 text-[10px] font-black uppercase text-slate-400">
                         <th className="py-3 px-3">Assignment</th>
@@ -1710,94 +1738,96 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                   </div>
 
                   {/* MONTHLY CALENDAR GRID */}
-                  <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-100/50">
-                    {/* DAYS OF THE WEEK HEADER */}
-                    <div className="grid grid-cols-7 bg-slate-800 text-white text-center text-xs font-black py-2.5">
-                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
-                        <div key={day} className={idx === 0 || idx === 6 ? 'text-amber-300' : 'text-slate-200'}>
-                          {day}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* CALENDAR CELLS GRID */}
-                    <div className="grid grid-cols-7 bg-slate-200 gap-px">
-                      {/* Leading Blank Cells */}
-                      {Array.from({ length: firstDayIndex }).map((_, i) => (
-                        <div key={`blank-${i}`} className="bg-slate-50 min-h-[110px] p-2 text-slate-300 select-none">
-                        </div>
-                      ))}
-
-                      {/* Day Cells */}
-                      {daysArray.map(dayNum => {
-                        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
-                        const dayData = calData[dateStr] || { status: 'available' };
-                        const isToday = calYear === 2026 && calMonth === 8 && dayNum === 6;
-
-                        let cellBg = 'bg-white hover:bg-slate-50';
-                        let badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                        let statusText = 'Available';
-
-                        if (dayData.status === 'booked') {
-                          cellBg = 'bg-blue-50/70 hover:bg-blue-100/70 border-blue-200';
-                          badgeBg = 'bg-[#1677FF] text-white border-blue-600';
-                          statusText = dayData.client ? `${dayData.client}` : 'Booked';
-                        } else if (dayData.status === 'unavailable') {
-                          cellBg = 'bg-slate-100/90 hover:bg-slate-200/90 text-slate-400';
-                          badgeBg = 'bg-slate-200 text-slate-600 border-slate-300';
-                          statusText = 'Blocked';
-                        } else if (dayData.status === 'tentative') {
-                          cellBg = 'bg-amber-50/80 hover:bg-amber-100/80';
-                          badgeBg = 'bg-amber-500 text-white border-amber-600';
-                          statusText = 'Hold';
-                        }
-
-                        return (
-                          <div
-                            key={dateStr}
-                            onClick={() => openCalDateEditor(dateStr)}
-                            className={`min-h-[110px] p-2.5 cursor-pointer transition flex flex-col justify-between group relative ${cellBg}`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <span className={`text-xs font-black ${
-                                isToday 
-                                  ? 'h-6 w-6 rounded-full bg-[#1677FF] text-white flex items-center justify-center shadow-xs' 
-                                  : 'text-[#091536]'
-                              }`}>
-                                {dayNum}
-                              </span>
-                              
-                              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border truncate max-w-[80px] ${badgeBg}`}>
-                                {statusText}
-                              </span>
-                            </div>
-
-                            {/* Details inside cell */}
-                            <div className="mt-1 space-y-0.5 text-left">
-                              {dayData.eventTitle && (
-                                <p className="text-[10px] font-black text-[#091536] leading-tight line-clamp-2">
-                                  {dayData.eventTitle}
-                                </p>
-                              )}
-                              {dayData.location && (
-                                <p className="text-[9px] text-slate-500 font-medium truncate">
-                                  📍 {dayData.location}
-                                </p>
-                              )}
-                              {dayData.note && !dayData.eventTitle && (
-                                <p className="text-[9px] text-slate-400 font-medium italic truncate">
-                                  {dayData.note}
-                                </p>
-                              )}
-                            </div>
-
-                            {/* Hover prompt */}
-                            <div className="opacity-0 group-hover:opacity-100 transition text-[9px] font-bold text-[#1677FF] text-right mt-1">
-                              Edit ✏️
-                            </div>
+                  <div className="border border-slate-200 rounded-2xl overflow-x-auto bg-slate-100/50">
+                    <div className="min-w-[640px]">
+                      {/* DAYS OF THE WEEK HEADER */}
+                      <div className="grid grid-cols-7 bg-slate-800 text-white text-center text-xs font-black py-2.5">
+                        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
+                          <div key={day} className={idx === 0 || idx === 6 ? 'text-amber-300' : 'text-slate-200'}>
+                            {day}
                           </div>
-                        );
-                      })}
+                        ))}
+                      </div>
+
+                      {/* CALENDAR CELLS GRID */}
+                      <div className="grid grid-cols-7 bg-slate-200 gap-px">
+                        {/* Leading Blank Cells */}
+                        {Array.from({ length: firstDayIndex }).map((_, i) => (
+                          <div key={`blank-${i}`} className="bg-slate-50 min-h-[85px] sm:min-h-[110px] p-1.5 sm:p-2 text-slate-300 select-none">
+                          </div>
+                        ))}
+
+                        {/* Day Cells */}
+                        {daysArray.map(dayNum => {
+                          const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                          const dayData = calData[dateStr] || { status: 'available' };
+                          const isToday = calYear === 2026 && calMonth === 8 && dayNum === 6;
+
+                          let cellBg = 'bg-white hover:bg-slate-50';
+                          let badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                          let statusText = 'Available';
+
+                          if (dayData.status === 'booked') {
+                            cellBg = 'bg-blue-50/70 hover:bg-blue-100/70 border-blue-200';
+                            badgeBg = 'bg-[#1677FF] text-white border-blue-600';
+                            statusText = dayData.client ? `${dayData.client}` : 'Booked';
+                          } else if (dayData.status === 'unavailable') {
+                            cellBg = 'bg-slate-100/90 hover:bg-slate-200/90 text-slate-400';
+                            badgeBg = 'bg-slate-200 text-slate-600 border-slate-300';
+                            statusText = 'Blocked';
+                          } else if (dayData.status === 'tentative') {
+                            cellBg = 'bg-amber-50/80 hover:bg-amber-100/80';
+                            badgeBg = 'bg-amber-500 text-white border-amber-600';
+                            statusText = 'Hold';
+                          }
+
+                          return (
+                            <div
+                              key={dateStr}
+                              onClick={() => openCalDateEditor(dateStr)}
+                              className={`min-h-[85px] sm:min-h-[110px] p-1.5 sm:p-2.5 cursor-pointer transition flex flex-col justify-between group relative ${cellBg}`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className={`text-xs font-black ${
+                                  isToday 
+                                    ? 'h-6 w-6 rounded-full bg-[#1677FF] text-white flex items-center justify-center shadow-xs' 
+                                    : 'text-[#091536]'
+                                }`}>
+                                  {dayNum}
+                                </span>
+                                
+                                <span className={`text-[9px] sm:text-[10px] font-black px-1 sm:px-1.5 py-0.5 rounded-md border truncate max-w-[70px] sm:max-w-[80px] ${badgeBg}`}>
+                                  {statusText}
+                                </span>
+                              </div>
+
+                              {/* Details inside cell */}
+                              <div className="mt-1 space-y-0.5 text-left">
+                                {dayData.eventTitle && (
+                                  <p className="text-[10px] font-black text-[#091536] leading-tight line-clamp-2">
+                                    {dayData.eventTitle}
+                                  </p>
+                                )}
+                                {dayData.location && (
+                                  <p className="text-[9px] text-slate-500 font-medium truncate">
+                                    📍 {dayData.location}
+                                  </p>
+                                )}
+                                {dayData.note && !dayData.eventTitle && (
+                                  <p className="text-[9px] text-slate-400 font-medium italic truncate">
+                                    {dayData.note}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Hover prompt */}
+                              <div className="opacity-0 group-hover:opacity-100 transition text-[9px] font-bold text-[#1677FF] text-right mt-1">
+                                Edit ✏️
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1928,7 +1958,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                   </div>
 
                   {/* SEARCH BOX */}
-                  <div className="relative min-w-[220px]">
+                  <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[220px]">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                     <input
                       type="text"
@@ -1943,7 +1973,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 {/* DOCUMENTS TABLE GRID */}
                 <div className="rounded-3xl border border-slate-200 bg-white shadow-xs overflow-hidden">
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
+                    <table className="w-full text-left text-xs min-w-[700px]">
                       <thead className="bg-slate-800 text-white font-black uppercase text-[10px] tracking-wider">
                         <tr>
                           <th className="py-3.5 px-4">Document Title</th>
@@ -2101,7 +2131,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
       {/* CORPORATE RELATIONSHIP DETAIL DRAWER/MODAL */}
       {selectedCorporate && (
         <div className="fixed inset-0 z-50 flex items-center justify-end bg-slate-900/60 backdrop-blur-xs animate-in fade-in">
-          <div className="relative w-full max-w-lg h-full bg-white p-6 sm:p-8 shadow-2xl overflow-y-auto space-y-6 border-l border-slate-200">
+          <div className="relative w-full max-w-full sm:max-w-lg h-full max-h-screen bg-white p-5 sm:p-8 shadow-2xl overflow-y-auto space-y-6 border-l border-slate-200">
             <button
               type="button"
               onClick={() => setSelectedCorporate(null)}
@@ -2142,8 +2172,8 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
       {/* PROPOSAL SUBMISSION MODAL */}
       {selectedOpportunity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 sm:p-8 shadow-2xl space-y-5 border border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs animate-in fade-in overflow-y-auto">
+          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-5 sm:p-8 shadow-2xl space-y-5 border border-slate-100 my-auto">
             <button
               type="button"
               onClick={() => setSelectedOpportunity(null)}
@@ -2191,17 +2221,17 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 ></textarea>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setSelectedOpportunity(null)}
-                  className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                  className="rounded-xl border border-slate-200 px-5 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 transition text-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#0E9F88] px-6 py-2.5 text-xs font-black text-white shadow-md shadow-[#0E9F88]/20 hover:bg-[#0C8975] transition active:scale-98"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-6 py-2.5 text-xs font-black text-white shadow-md shadow-[#0E9F88]/20 hover:bg-[#0C8975] transition active:scale-98"
                 >
                   <Send className="h-3.5 w-3.5" />
                   <span>Send Proposal</span>
@@ -2214,8 +2244,8 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
       {/* CALENDAR AVAILABILITY & DATE EDITOR MODAL */}
       {selectedCalDateStr && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 border border-slate-200 my-auto">
             <button
               type="button"
               onClick={() => setSelectedCalDateStr(null)}
@@ -2330,18 +2360,18 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="pt-2 flex items-center justify-end gap-3">
+            <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setSelectedCalDateStr(null)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition text-center"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveCalAvailability}
-                className="px-5 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20"
+                className="px-5 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20 text-center"
               >
                 Save Availability
               </button>
@@ -2352,8 +2382,8 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
       {/* UPLOAD DOCUMENT MODAL */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="relative w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-5 border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+          <div className="relative w-full max-w-md max-h-[90vh] overflow-y-auto bg-white rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 border border-slate-200 my-auto">
             <button
               type="button"
               onClick={() => setIsUploadModalOpen(false)}
@@ -2419,17 +2449,17 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                 <p className="text-[10px] text-slate-400 font-semibold">Supports PDF, DOCX, PPTX, PNG (Max 25MB)</p>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setIsUploadModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition text-center"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20"
+                  className="px-6 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20 text-center"
                 >
                   Save to Vault
                 </button>
@@ -2441,8 +2471,8 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
 
       {/* PREVIEW DOCUMENT MODAL */}
       {previewDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-7 shadow-2xl space-y-5 border border-slate-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in overflow-y-auto">
+          <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white rounded-3xl p-5 sm:p-7 shadow-2xl space-y-5 border border-slate-200 my-auto">
             <button
               type="button"
               onClick={() => setPreviewDoc(null)}
@@ -2473,15 +2503,15 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
               </p>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <span className="rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black px-3 py-1 border border-emerald-300">
+            <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+              <span className="rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black px-3 py-1 border border-emerald-300 text-center sm:text-left">
                 Status: {previewDoc.status}
               </span>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setPreviewDoc(null)}
-                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition"
+                  className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition text-center"
                 >
                   Close
                 </button>
@@ -2491,7 +2521,7 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                     triggerToast(`Downloading ${previewDoc.name}...`);
                     setPreviewDoc(null);
                   }}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#0E9F88] px-5 py-2 text-xs font-black text-white hover:bg-[#0C8975] transition shadow-md shadow-[#0E9F88]/20"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-5 py-2 text-xs font-black text-white hover:bg-[#0C8975] transition shadow-md shadow-[#0E9F88]/20"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>Download Document</span>
