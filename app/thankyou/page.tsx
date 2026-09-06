@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { CheckCircle2, ArrowRight, Home, FileCheck, Sparkles, Building2, GraduationCap, Users } from 'lucide-react';
+import { CheckCircle2, ArrowRight, Home, FileCheck, Sparkles, Building2, GraduationCap, Users, LayoutGrid } from 'lucide-react';
 import { HeroBackdrop } from '@/src/components/landing/HeroBackdrop';
 
 function ThankYouContent() {
@@ -113,6 +113,18 @@ function ThankYouContent() {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          {type === 'trainer' && (
+            <button
+              type="button"
+              onClick={() => router.push('/trainer-dashboard')}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              <span>Go to Trainer Dashboard</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          )}
+
           {type === 'corporate' && (
             <button
               type="button"
@@ -129,14 +141,14 @@ function ThankYouContent() {
             type="button"
             onClick={() => router.push('/')}
             className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl ${
-              type === 'corporate'
+              type === 'corporate' || type === 'trainer'
                 ? 'bg-[#EEF5FF] text-[#1677FF] border border-[#D0E2FF] hover:bg-[#E2EEFF]'
                 : 'bg-[#1677FF] text-white shadow-md shadow-[#1677FF]/20 hover:bg-[#1562D6]'
             } px-7 py-3.5 text-xs sm:text-sm font-black transition active:scale-98`}
           >
             <Home className="h-4 w-4" />
             <span>Return to Homepage</span>
-            {type !== 'corporate' && <ArrowRight className="h-3.5 w-3.5" />}
+            {type !== 'corporate' && type !== 'trainer' && <ArrowRight className="h-3.5 w-3.5" />}
           </button>
         </div>
 

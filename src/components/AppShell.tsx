@@ -21,6 +21,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pathname === '/join-as-trainer' ||
     pathname === '/trainer-onboarding' ||
     pathname === '/trainer-portal' ||
+    pathname === '/trainer-dashboard' ||
     pathname === '/org-institute-form' ||
     pathname === '/thankyou' ||
     pathname === '/corporate-onboarding';
