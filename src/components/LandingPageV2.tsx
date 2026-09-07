@@ -40,6 +40,7 @@ import { LandingButton } from './landing/LandingButton';
 import { HeroBackdrop } from './landing/HeroBackdrop';
 import { SectionHeading } from './landing/SectionHeading';
 import { landingTestimonials as testimonials } from './landing/landingData';
+import { Footer } from './Footer';
 
 interface LandingPageV2Props {
   onExploreExperts?: (domain?: string, query?: string, delivery?: string) => void;
@@ -1687,108 +1688,8 @@ export const LandingPageV2: React.FC<LandingPageV2Props> = ({
         </div>
       </section>
 
-      {/* ORIGINAL DEEP NAVY FOOTER */}
-      <footer className="relative overflow-hidden border-t border-[#17305B] bg-[#07132F] px-4 pb-8 pt-14 text-white sm:px-6 lg:px-8">
-        <div className="relative z-10 mx-auto max-w-7xl">
-          <div className="grid gap-8 border-b border-white/12 pb-10 md:grid-cols-[1fr_auto] md:items-end">
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center rounded-2xl bg-white p-3.5 shadow-md">
-                  <img src="/logo/atlas-logo.webp" alt="AtlasCircle Logo" className="h-12 sm:h-14 md:h-16 w-auto object-contain" />
-                </div>
-              </div>
-              <h2 className="mt-6 max-w-2xl text-[24px] font-extrabold leading-tight sm:text-[32px]">
-                EXPERTISE MEETS OPPORTUNITY
-              </h2>
-            </div>
-            <LandingButton
-              onClick={handleCorporateSignUp}
-              variant="accent"
-              endIcon={<ArrowRight className="h-3.5 w-3.5" />}
-            >
-              Post a Training Brief
-            </LandingButton>
-          </div>
-
-          {/* BIG ATLASCIRCLE TEXT BANNER COMMENTED OUT */}
-          {/*
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="overflow-hidden border-b border-white/12 py-10 text-center"
-          >
-            <div className="atlas-display text-[48px] font-black leading-[0.85] tracking-tight text-white sm:text-[88px] lg:text-[130px]">
-              ATLASCIRCLE
-            </div>
-          </motion.div>
-          */}
-
-          <div className="grid gap-8 py-9 md:grid-cols-2 lg:grid-cols-5">
-            {/* Brand Intro & Socials */}
-            <div className="lg:col-span-2 space-y-4">
-              <p className="max-w-sm text-xs font-medium leading-relaxed text-[#AAB7D0]">
-                A curated marketplace of expert corporate trainers and facilitators empowering organizations to learn, share and grow.
-              </p>
-              <div className="flex items-center gap-2.5 pt-2">
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
-                  <Linkedin className="h-3.5 w-3.5" />
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
-                  <Twitter className="h-3.5 w-3.5" />
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
-                  <Facebook className="h-3.5 w-3.5" />
-                </a>
-                <a href="/" aria-label="Website" className="flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white/80 transition-colors hover:border-white hover:text-white">
-                  <Globe className="h-3.5 w-3.5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Link Columns */}
-            <div>
-              <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">For Corporates</div>
-              <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <button onClick={() => router.push('/experts')} className="transition-colors hover:text-[#31E6B1]">Find Trainers</button>
-                <button onClick={handleCorporateSignUp} className="transition-colors hover:text-[#31E6B1]">Post a Training Brief</button>
-                <button onClick={() => router.push('/requirements')} className="transition-colors hover:text-[#31E6B1]">My Requirements</button>
-                <button onClick={() => router.push('/engagements')} className="transition-colors hover:text-[#31E6B1]">Workshops &amp; Engagements</button>
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">For Trainers</div>
-              <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <button onClick={handleTrainerSignUp} className="transition-colors hover:text-[#31E6B1]">Join as Verified Trainer</button>
-                <button onClick={() => router.push('/trainer-portal')} className="transition-colors hover:text-[#31E6B1]">Trainer Portal</button>
-                <button onClick={() => router.push('/trainer-registration')} className="transition-colors hover:text-[#31E6B1]">Trainer Verification</button>
-                <button onClick={() => router.push('/login')} className="transition-colors hover:text-[#31E6B1]">Account Sign In</button>
-              </div>
-            </div>
-
-            <div>
-              <div className="mb-3 text-[10px] font-black uppercase text-[#7EE7D0]">Platform &amp; Tools</div>
-              <div className="flex flex-col items-start gap-2 text-xs font-semibold text-[#DCE5F5]">
-                <button onClick={() => router.push('/shortlist')} className="transition-colors hover:text-[#31E6B1]">Shortlist &amp; Bookings</button>
-                <button onClick={() => router.push('/reports')} className="transition-colors hover:text-[#31E6B1]">Reports &amp; Analytics</button>
-                <button onClick={() => router.push('/settings')} className="transition-colors hover:text-[#31E6B1]">Account Settings</button>
-                <button onClick={() => router.push('/')} className="transition-colors hover:text-[#31E6B1]">Home Overview</button>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 border-t border-white/12 pt-6 text-[11px] font-medium text-[#8290AA] sm:flex-row sm:items-center sm:justify-between">
-            <p>&copy; 2026 AtlasCircle. Corporate Trainer &amp; Facilitator Platform. All rights reserved.</p>
-            <div className="flex flex-wrap gap-5">
-              <button onClick={() => router.push('/terms')} className="transition-colors hover:text-white">Terms</button>
-              <button onClick={() => router.push('/privacy')} className="transition-colors hover:text-white">Privacy</button>
-              <button onClick={() => router.push('/settings')} className="transition-colors hover:text-white">Settings</button>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* COMMON FOOTER */}
+      <Footer onPostBrief={handleCorporateSignUp} onJoinTrainer={handleTrainerSignUp} />
 
       {/* EMAIL VERIFICATION MODAL FOR EMBEDDED FORM */}
       {showRegModal && (

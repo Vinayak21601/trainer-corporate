@@ -24,7 +24,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pathname === '/trainer-dashboard' ||
     pathname === '/org-institute-form' ||
     pathname === '/thankyou' ||
-    pathname === '/corporate-onboarding';
+    pathname === '/corporate-onboarding' ||
+    pathname === '/about' ||
+    pathname === '/about-us';
 
   if (isFullScreen) {
     return <div className="min-h-screen bg-white font-sans text-[#111111]">{children}</div>;

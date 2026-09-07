@@ -33,6 +33,7 @@ import {
   Home,
   ShieldCheck,
   ChevronDown,
+  Info,
   ArrowUpRight,
   Plus,
   Lock,
@@ -199,6 +200,33 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
     setSelectedCalDateStr(null);
   };
 
+  const handleUnsetSingleDateAvailability = () => {
+    if (!selectedCalDateStr) return;
+    setCalData(prev => {
+      const updated = { ...prev };
+      delete updated[selectedCalDateStr];
+      return updated;
+    });
+    triggerToast(`Reset / Unset availability for ${selectedCalDateStr}`);
+    setSelectedCalDateStr(null);
+  };
+
+  const handleBulkMarkWeekendsAvailable = () => {
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const updated = { ...calData };
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayOfWeek = new Date(calYear, calMonth, d).getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        if (!updated[dateStr] || updated[dateStr].status !== 'booked') {
+          updated[dateStr] = { status: 'available' };
+        }
+      }
+    }
+    setCalData(updated);
+    triggerToast(`Marked all weekends in ${MONTH_NAMES[calMonth]} as Available`);
+  };
+
   const handleBulkMarkWeekendsUnavailable = () => {
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
     const updated = { ...calData };
@@ -212,7 +240,23 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
       }
     }
     setCalData(updated);
-    triggerToast(`Marked all weekends in ${MONTH_NAMES[calMonth]} as Unavailable`);
+    triggerToast(`Marked all weekends in ${MONTH_NAMES[calMonth]} as Blocked / Unavailable`);
+  };
+
+  const handleBulkUnsetWeekends = () => {
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const updated = { ...calData };
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayOfWeek = new Date(calYear, calMonth, d).getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        if (updated[dateStr] && updated[dateStr].status !== 'booked') {
+          delete updated[dateStr];
+        }
+      }
+    }
+    setCalData(updated);
+    triggerToast(`Unset / Cleared status for all weekends in ${MONTH_NAMES[calMonth]}`);
   };
 
   const handleBulkMarkWeekdaysAvailable = () => {
@@ -229,6 +273,22 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
     }
     setCalData(updated);
     triggerToast(`Marked all weekdays in ${MONTH_NAMES[calMonth]} as Available`);
+  };
+
+  const handleBulkUnsetWeekdays = () => {
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const updated = { ...calData };
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayOfWeek = new Date(calYear, calMonth, d).getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        const dateStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        if (updated[dateStr] && updated[dateStr].status !== 'booked') {
+          delete updated[dateStr];
+        }
+      }
+    }
+    setCalData(updated);
+    triggerToast(`Unset / Cleared status for all weekdays in ${MONTH_NAMES[calMonth]}`);
   };
 
   useEffect(() => {
@@ -1699,20 +1759,100 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
                         </button>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={handleBulkMarkWeekdaysAvailable}
-                        className="rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition"
-                      >
-                        🟢 Set Weekdays Available
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleBulkMarkWeekendsUnavailable}
-                        className="rounded-xl bg-slate-100 border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition"
-                      >
-                        🔴 Block Weekends
-                      </button>
+                      {/* 1. Set Weekends Available */}
+                      <div className="relative group/tooltip inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={handleBulkMarkWeekendsAvailable}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 transition shadow-2xs"
+                        >
+                          <span>🟢 Set Weekends Available</span>
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-200/80 text-emerald-800">
+                            <Info className="h-2.5 w-2.5" />
+                          </span>
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden w-52 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-medium text-white shadow-xl group-hover/tooltip:block z-50">
+                          <div className="font-bold text-emerald-400 mb-0.5">Set Weekends Available</div>
+                          Marks all Saturdays &amp; Sundays in the current month as Available (Green) for corporate bookings.
+                          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
+
+                      {/* 2. Block Weekends */}
+                      <div className="relative group/tooltip inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={handleBulkMarkWeekendsUnavailable}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition shadow-2xs"
+                        >
+                          <span>🔴 Block Weekends</span>
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-rose-200/80 text-rose-800">
+                            <Info className="h-2.5 w-2.5" />
+                          </span>
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden w-52 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-medium text-white shadow-xl group-hover/tooltip:block z-50">
+                          <div className="font-bold text-rose-400 mb-0.5">Block Weekends</div>
+                          Marks all Saturdays &amp; Sundays in the current month as Blocked / Out of Office (Red/Gray).
+                          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
+
+                      {/* 3. Unset / Unblock Weekends */}
+                      <div className="relative group/tooltip inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={handleBulkUnsetWeekends}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition shadow-2xs"
+                        >
+                          <span>⚪ Unset / Unblock Weekends</span>
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-200 text-slate-700">
+                            <Info className="h-2.5 w-2.5" />
+                          </span>
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden w-56 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-medium text-white shadow-xl group-hover/tooltip:block z-50">
+                          <div className="font-bold text-slate-300 mb-0.5">Unset / Unblock Weekends</div>
+                          Clears custom weekend availability or blocks, resetting Saturdays &amp; Sundays back to default.
+                          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
+
+                      {/* 4. Set Weekdays Available */}
+                      <div className="relative group/tooltip inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={handleBulkMarkWeekdaysAvailable}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-blue-50 border border-blue-200 px-3 py-2 text-xs font-bold text-blue-700 hover:bg-blue-100 transition shadow-2xs"
+                        >
+                          <span>🟢 Set Weekdays Available</span>
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-200/80 text-blue-800">
+                            <Info className="h-2.5 w-2.5" />
+                          </span>
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden w-52 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-medium text-white shadow-xl group-hover/tooltip:block z-50">
+                          <div className="font-bold text-blue-400 mb-0.5">Set Weekdays Available</div>
+                          Marks all Mondays to Fridays in the current month as Available (Green) for corporate bookings.
+                          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
+
+                      {/* 5. Unset Weekdays */}
+                      <div className="relative group/tooltip inline-flex items-center">
+                        <button
+                          type="button"
+                          onClick={handleBulkUnsetWeekdays}
+                          className="inline-flex items-center gap-1.5 rounded-xl bg-slate-100 border border-slate-200 px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition shadow-2xs"
+                        >
+                          <span>⚪ Unset Weekdays</span>
+                          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-200 text-slate-700">
+                            <Info className="h-2.5 w-2.5" />
+                          </span>
+                        </button>
+                        <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 hidden w-52 -translate-x-1/2 rounded-xl bg-slate-900 px-3 py-2 text-[11px] font-medium text-white shadow-xl group-hover/tooltip:block z-50">
+                          <div className="font-bold text-slate-300 mb-0.5">Unset Weekdays</div>
+                          Clears custom status or blocks on Mondays to Fridays, resetting weekdays back to default.
+                          <div className="absolute top-full left-1/2 -ml-1 border-4 border-transparent border-t-slate-900" />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -2360,21 +2500,30 @@ export const TrainerDashboard: React.FC<TrainerDashboardProps> = () => {
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3">
+            <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
               <button
                 type="button"
-                onClick={() => setSelectedCalDateStr(null)}
-                className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition text-center"
+                onClick={handleUnsetSingleDateAvailability}
+                className="px-3.5 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-xs font-bold text-rose-700 hover:bg-rose-100 transition text-center"
               >
-                Cancel
+                🗑️ Unset / Clear Slot
               </button>
-              <button
-                type="button"
-                onClick={handleSaveCalAvailability}
-                className="px-5 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20 text-center"
-              >
-                Save Availability
-              </button>
+              <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCalDateStr(null)}
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveCalAvailability}
+                  className="px-5 py-2.5 rounded-xl bg-[#1677FF] text-xs font-black text-white hover:bg-blue-700 transition shadow-md shadow-blue-500/20 text-center"
+                >
+                  Save Availability
+                </button>
+              </div>
             </div>
           </div>
         </div>
