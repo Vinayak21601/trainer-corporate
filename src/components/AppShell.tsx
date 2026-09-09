@@ -36,7 +36,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     <div className="flex min-h-screen bg-[#F7F9FC] font-sans text-[#111111]">
       <Sidebar shortlistCount={shortlistedTrainers.length} />
       <div className="flex min-w-0 flex-1 flex-col">
-        {pathname !== '/dashboard' && (
+        {pathname !== '/dashboard' && pathname !== '/corporate-profile' && (
           <Header shortlistCount={shortlistedTrainers.length} onOpenAiAssistant={openAiAssistant} />
         )}
         <main className="flex min-w-0 flex-1 flex-col">{children}</main>

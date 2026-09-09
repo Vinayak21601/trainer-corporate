@@ -2,21 +2,29 @@
 
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { BarChart3, Bookmark, CalendarDays, FileText, Layers3, Search, Settings, Users } from 'lucide-react';
+import { BarChart3, Bookmark, Building2, CalendarDays, FileText, Layers3, Search, Settings, Users } from 'lucide-react';
 
 interface SidebarProps { shortlistCount: number; }
 
 export const Sidebar: React.FC<SidebarProps> = ({ shortlistCount }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const navItems = [
+  interface NavItem {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    path: string;
+    badge?: number;
+  }
+
+  const navItems: NavItem[] = [
     { label: 'Overview', icon: Layers3, path: '/dashboard' },
-    { label: 'Trainers', icon: Users, path: '/experts' },
-    { label: 'Workshops', icon: CalendarDays, path: '/engagements' },
-    { label: 'Bookings', icon: Bookmark, path: '/shortlist', badge: shortlistCount },
-    { label: 'Analytics', icon: BarChart3, path: '/requirements' },
-    { label: 'Reports', icon: BarChart3, path: '/reports' },
-    { label: 'Settings', icon: Settings, path: '/settings' },
+    { label: 'Corporate Profile', icon: Building2, path: '/corporate-profile' },
+    // { label: 'Trainers', icon: Users, path: '/experts' },
+    // { label: 'Workshops', icon: CalendarDays, path: '/engagements' },
+    // { label: 'Bookings', icon: Bookmark, path: '/shortlist', badge: shortlistCount },
+    // { label: 'Analytics', icon: BarChart3, path: '/requirements' },
+    // { label: 'Reports', icon: BarChart3, path: '/reports' },
+    // { label: 'Settings', icon: Settings, path: '/settings' },
   ];
 
   return (

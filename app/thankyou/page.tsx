@@ -111,13 +111,13 @@ function ThankYouContent() {
           </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        {/* Action Buttons Container */}
+        <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 pt-4 w-full">
           {type === 'trainer' && (
             <button
               type="button"
               onClick={() => router.push('/trainer-dashboard')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98"
+              className="w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98 cursor-pointer whitespace-nowrap shrink-0"
             >
               <LayoutGrid className="h-4 w-4" />
               <span>Go to Trainer Dashboard</span>
@@ -126,29 +126,63 @@ function ThankYouContent() {
           )}
 
           {type === 'corporate' && (
-            <button
-              type="button"
-              onClick={() => router.push('/create-requirement')}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] px-7 py-3.5 text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98"
-            >
-              <FileCheck className="h-4 w-4" />
-              <span>Create Requirement</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => router.push('/dashboard')}
+                className="w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                <span>Go to Corporate Dashboard</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push('/create-requirement')}
+                className="w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#EEF5FF] text-[#1677FF] border border-[#D0E2FF] hover:bg-[#E2EEFF] text-xs sm:text-sm font-black transition active:scale-98 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <FileCheck className="h-4 w-4 text-[#1677FF]" />
+                <span>Create Requirement</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </>
+          )}
+
+          {type === 'requirement' && (
+            <>
+              <button
+                type="button"
+                onClick={() => router.push('/dashboard')}
+                className="w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#0E9F88] text-xs sm:text-sm font-black text-white shadow-md shadow-[#0E9F88]/20 transition hover:bg-[#0C8975] active:scale-98 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                <span>Go to Corporate Dashboard</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push('/create-requirement')}
+                className="w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl bg-[#EEF5FF] text-[#1677FF] border border-[#D0E2FF] hover:bg-[#E2EEFF] text-xs sm:text-sm font-black transition active:scale-98 cursor-pointer whitespace-nowrap shrink-0"
+              >
+                <FileCheck className="h-4 w-4 text-[#1677FF]" />
+                <span>Post Another Requirement</span>
+              </button>
+            </>
           )}
 
           <button
             type="button"
             onClick={() => router.push('/')}
-            className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl ${
-              type === 'corporate' || type === 'trainer'
-                ? 'bg-[#EEF5FF] text-[#1677FF] border border-[#D0E2FF] hover:bg-[#E2EEFF]'
+            className={`w-full sm:w-auto h-12 px-6 inline-flex items-center justify-center gap-2 rounded-xl ${
+              type === 'corporate' || type === 'trainer' || type === 'requirement'
+                ? 'bg-slate-100 text-[#475569] hover:bg-slate-200 border border-slate-200'
                 : 'bg-[#1677FF] text-white shadow-md shadow-[#1677FF]/20 hover:bg-[#1562D6]'
-            } px-7 py-3.5 text-xs sm:text-sm font-black transition active:scale-98`}
+            } text-xs sm:text-sm font-black transition active:scale-98 cursor-pointer whitespace-nowrap shrink-0`}
           >
             <Home className="h-4 w-4" />
             <span>Return to Homepage</span>
-            {type !== 'corporate' && type !== 'trainer' && <ArrowRight className="h-3.5 w-3.5" />}
           </button>
         </div>
 
